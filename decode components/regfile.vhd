@@ -2,10 +2,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity regfile is
-  port(src1, src2, dst, write_reg: in std_logic_vector(2 downto 0);
+  port(src1, src2, write_reg: in std_logic_vector(2 downto 0);
       write_val: in std_logic_vector(31 downto 0);
       rst, clk, load: in std_logic;
-      src1_val, src2_val, dst_val: out std_logic_vector(31 downto 0));
+      src1_val, src2_val: out std_logic_vector(31 downto 0));
 end regfile;
 
 architecture arch of regfile is
@@ -83,24 +83,6 @@ architecture arch of regfile is
                     src2_val <= q6;
                 when others =>
                     src2_val <= q7;
-            end case;
-            case dst is
-                when "000" =>
-                    dst_val <= q0;
-                when "001" =>
-                    dst_val <= q1;
-                when "010" =>
-                    dst_val <= q2;
-                when "011" =>
-                    dst_val <= q3;
-                when "100" =>
-                    dst_val <= q4;
-                when "101" =>
-                    dst_val <= q5;
-                when "110" =>
-                    dst_val <= q6;
-                when others =>
-                    dst_val <= q7;
             end case;
         end if;
         if load = '0' then
