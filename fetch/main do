@@ -14,6 +14,7 @@ vsim -gui work.main
 # Loading work.fetch_hazard(fetch_hazard_arch)
 # Loading work.extra_fetch_hazard(extra_fetch_hazard_arch)
 # Loading work.register1(description)
+# Loading work.ret_rti_reset_int_unit(ret_rti_reset_int_arch)
 add wave -position end  sim:/main/A
 add wave -position end  sim:/main/clk
 add wave -position end  sim:/main/reset
@@ -39,15 +40,22 @@ add wave -position end  sim:/main/Rsrc1_EM_code
 add wave -position end  sim:/main/Rsrc1_MW_code
 add wave -position end  sim:/main/Rsrc2_DE_code
 add wave -position end  sim:/main/ZF
-add wave -position end  sim:/main/INT_MW
-add wave -position end  sim:/main/RESET_MW
+add wave -position end  sim:/main/INT_EM
+add wave -position end  sim:/main/RESET_EM
 add wave -position end  sim:/main/control_unit_mux
 force -freeze sim:/main/A 0000000000000000 0
 force -freeze sim:/main/clk 1 0, 0 {50 ps} -r 100
 force -freeze sim:/main/reset 1 0
 force -freeze sim:/main/int 0 0
+force -freeze sim:/main/PC_flags_mem 00000000000000000000000000000001 0
+run
+run
 run
 force -freeze sim:/main/reset 0 0
+run
+run
+run
+force -freeze sim:/main/RESET_EM 1 0
 run
 run
 run

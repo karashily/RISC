@@ -27,8 +27,8 @@ entity hazard_detection_unit is
         ZF: in STD_LOGIC;
         -- RET-RTI-Reset-INT
         INT: in STD_LOGIC;
-        INT_MW: in STD_LOGIC;
-        RESET_MW: in STD_LOGIC;
+        INT_EM: in STD_LOGIC;
+        RESET_EM: in STD_LOGIC;
         
         -- outputs
         wrong_prediction_bit: out STD_LOGIC;
@@ -57,6 +57,19 @@ architecture hazard_detection_unit_arch of hazard_detection_unit is
           );
     end component;
 
+    component  RET_RTI_RESET_INT_unit IS PORT(
+        A: in std_logic_vector(15 downto 0);
+        opcode_EM: in std_logic_vector(4 downto 0);
+        INT: in std_logic;
+        INT_EM: in std_logic;
+        RESET: in std_logic;
+        RESET_EM: in std_logic;
+        clk: in std_logic;
+
+        output: out std_logic
+        );
+    END  component;
+
 begin
     PC_write <= not( 
                 stall_bit_1 or 
@@ -76,8 +89,10 @@ begin
     wrong_prediction_bit <= stall_bit_4;
 
     long_fetch_hazard : fetch_hazard port map (A,clk,reset,stall_bit_2);
+    RET_RTI_RESET_INT_hazard : RET_RTI_RESET_INT_unit port map (A,opcode_EM,INT,INT_EM,RESET,RESET_EM,clk,stall_bit_5);
 
-    process(stall_bit_5)
+
+    process(clk)
         begin
             if falling_edge(stall_bit_5) then
                 load_ret_PC <= '1';
