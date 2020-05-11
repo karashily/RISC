@@ -1,0 +1,57 @@
+vsim -gui work.main
+# vsim -gui work.main 
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.main(main_arch)
+# Loading work.fetch(fetch_arch)
+# Loading work.pc_predictor(pc_predictor_arch)
+# Loading ieee.std_logic_arith(body)
+# Loading ieee.std_logic_signed(body)
+# Loading work.regi(arch)
+# Loading work.hazard_detection_unit(hazard_detection_unit_arch)
+# Loading work.fetch_hazard(fetch_hazard_arch)
+# Loading work.extra_fetch_hazard(extra_fetch_hazard_arch)
+# Loading work.register1(description)
+add wave -position end  sim:/main/A
+add wave -position end  sim:/main/clk
+add wave -position end  sim:/main/reset
+add wave -position end  sim:/main/int
+add wave -position end  sim:/main/prediction_bit
+add wave -position end  sim:/main/Rdst_val
+add wave -position end  sim:/main/PC_flags_mem
+add wave -position end  sim:/main/unpredicted_PC_E
+add wave -position end  sim:/main/load_ret_PC
+add wave -position end  sim:/main/wrong_prediction_bit
+add wave -position end  sim:/main/PC_load
+add wave -position end  sim:/main/PC
+add wave -position end  sim:/main/opcode_FD
+add wave -position end  sim:/main/opcode_DE
+add wave -position end  sim:/main/opcode_EM
+add wave -position end  sim:/main/opcode_MW
+add wave -position end  sim:/main/Rdst_FD_code
+add wave -position end  sim:/main/Rdst_DE_code
+add wave -position end  sim:/main/Rdst_EM_code
+add wave -position end  sim:/main/Rdst_MW_code
+add wave -position end  sim:/main/Rsrc1_DE_code
+add wave -position end  sim:/main/Rsrc1_EM_code
+add wave -position end  sim:/main/Rsrc1_MW_code
+add wave -position end  sim:/main/Rsrc2_DE_code
+add wave -position end  sim:/main/ZF
+add wave -position end  sim:/main/INT_MW
+add wave -position end  sim:/main/RESET_MW
+add wave -position end  sim:/main/control_unit_mux
+force -freeze sim:/main/A 0000000000000000 0
+force -freeze sim:/main/clk 1 0, 0 {50 ps} -r 100
+force -freeze sim:/main/reset 1 0
+force -freeze sim:/main/int 0 0
+run
+force -freeze sim:/main/reset 0 0
+run
+run
+run
+run
+run
+run
+run
