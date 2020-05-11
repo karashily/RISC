@@ -45,7 +45,7 @@ architecture arch of regfile is
     reg6: reg generic map (n=>32) port map(d=>write_val, clk=>clk, rst=>rst, load=>load6, q=>q6);
     reg7: reg generic map (n=>32) port map(d=>write_val, clk=>clk, rst=>rst, load=>load7, q=>q7);
 
-    process(clk, rst)
+    process(clk, rst, write_reg, load)
       begin
         if falling_edge(clk) then
             case src1 is
