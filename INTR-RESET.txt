@@ -1,0 +1,25 @@
+If INTR_MEM == 1 and INTR_WB == 0:
+	Rd/Wr = 1            -- Wr
+	val_sel = 11
+	add_sel = 11
+	SP_load = 1
+	SP_Alu = 1
+else If INTR_WB == 1:
+	Rd/Wr = 0            -- Rd
+	val_sel = 00
+	add_sel = 01
+	SP_load = 0
+	SP_Alu = x
+else If Reset == 1:
+	Rd/Wr = 0            -- Rd
+	val_sel = 00
+	add_sel = 00
+	SP_load = 0
+	SP_Alu = x
+else:
+	Rd/Wr = Rd/Wr_in     -- Rd
+	val_sel = val_sel_in
+	add_sel = add_sel_in
+	SP_load = SP_load_in
+	SP_Alu = SP_Alu_in
+	
