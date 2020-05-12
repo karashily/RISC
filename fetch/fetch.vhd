@@ -26,7 +26,7 @@ architecture fetch_arch of fetch is
     signal PC_mem : std_logic_vector(31 downto 0);
     signal prediction_bit : std_logic := '0';
     signal PC_reg_in : std_logic_vector(31 downto 0);
-    constant PC_start : std_logic_vector(31 downto 0) := "10101010101010101010101010101010";
+    constant PC_start : std_logic_vector(31 downto 0) := "01000000000000000000000000000000"; -- location of nop
     
     component PC_predictor is
         port(
@@ -62,7 +62,8 @@ begin
     PC_mem(19 downto 0) <= PC_flags_mem(19 downto 0);
     PC_mem(31 downto 20) <= (others => '0');
     PC_pred : PC_predictor port map (A,Rdst_val,PC,PC_mem,unpredicted_PC_E,prediction_bit,load_ret_PC,wrong_prediction_bit,clk,PC_predicted,PC_unpredicted);
-    PC_reg_in <= PC_predicted when reset = '0' else PC_start;
+    -- PC_reg_in <= PC_predicted when reset = '0' else PC_start;
+    PC_reg_in <= PC_predicted;
     PC_reg : regi generic map (32) port map (PC_reg_in,PC_load,'0',clk,PC);
     prediction_bit_out <= prediction_bit;
     PC_to_fetch <= PC;

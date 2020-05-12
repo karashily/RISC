@@ -35,8 +35,8 @@ signal Rsrc1_EM_code: STD_LOGIC_VECTOR (2 DOWNTO 0);
 signal Rsrc1_MW_code: STD_LOGIC_VECTOR (2 DOWNTO 0);
 signal Rsrc2_DE_code: STD_LOGIC_VECTOR (2 DOWNTO 0);
 signal ZF: STD_LOGIC;
-signal INT_MW: STD_LOGIC;
-signal RESET_MW: STD_LOGIC;
+signal INT_EM: STD_LOGIC;
+signal RESET_EM: STD_LOGIC;
 signal control_unit_mux: STD_LOGIC;
 
 
@@ -90,8 +90,8 @@ component fetch is
         ZF: in STD_LOGIC;
         -- RET-RTI-Reset-INT
         INT: in STD_LOGIC;
-        INT_MW: in STD_LOGIC;
-        RESET_MW: in STD_LOGIC;
+        INT_EM: in STD_LOGIC;
+        RESET_EM: in STD_LOGIC;
         
         -- outputs
         wrong_prediction_bit: out STD_LOGIC;
@@ -120,8 +120,8 @@ BEGIN
                                                Rsrc2_DE_code,
                                                ZF,
                                                INT,
-                                               INT_MW,
-                                               RESET_MW,
+                                               INT_EM,
+                                               RESET_EM,
                                                wrong_prediction_bit,
                                                load_ret_PC,
                                                PC_load,
