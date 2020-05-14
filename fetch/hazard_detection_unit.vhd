@@ -34,7 +34,8 @@ entity hazard_detection_unit is
         wrong_prediction_bit: out STD_LOGIC;
         load_ret_PC: out STD_LOGIC;
         PC_write: out STD_LOGIC;
-        control_unit_mux: out STD_LOGIC
+        control_unit_mux: out STD_LOGIC;
+        fetch_stall: out STD_LOGIC
       );
   end hazard_detection_unit;
 
@@ -44,6 +45,7 @@ architecture hazard_detection_unit_arch of hazard_detection_unit is
     signal stall_bit_3: std_logic := '0';
     signal stall_bit_4: std_logic := '0';
     signal stall_bit_5: std_logic := '0';
+    signal stall_bit_5_delayed: std_logic := '0';
     signal stall_bit_6: std_logic := '0';
     signal stall_bit_7: std_logic := '0';
 
@@ -70,6 +72,15 @@ architecture hazard_detection_unit_arch of hazard_detection_unit is
         );
     END  component;
 
+    component register1 IS PORT(
+    d   : IN STD_LOGIC;
+    ld  : IN STD_LOGIC; -- load/enable.
+    clr : IN STD_LOGIC; -- async. clear.
+    clk : IN STD_LOGIC; -- clock.
+    q   : OUT STD_LOGIC -- output.
+    );
+    END component;
+
 begin
     PC_write <= not( 
                 stall_bit_1 or 
@@ -90,15 +101,21 @@ begin
 
     long_fetch_hazard : fetch_hazard port map (A,clk,reset,stall_bit_2);
     RET_RTI_RESET_INT_hazard : RET_RTI_RESET_INT_unit port map (A,opcode_EM,INT,INT_EM,RESET,RESET_EM,clk,stall_bit_5);
+    -- reset_reg: register1 port map (stall_bit_5,'1','0',clk,stall_bit_5_delayed);
+    -- load_ret_PC <= '1' when stall_bit_5_delayed = 
+    -- load_ret_PC <= stall_bit_5;
 
-
-    process(clk)
+    fetch_stall <= stall_bit_2;
+    process(clk,stall_bit_5)
         begin
-            if falling_edge(stall_bit_5) then
+            if rising_edge(clk) then 
+            if (stall_bit_5 = '1') then
                 load_ret_PC <= '1';
             else
                 load_ret_PC <= '0';
             end if;
+            end if;
+            
         end process;
 
 end hazard_detection_unit_arch; 
