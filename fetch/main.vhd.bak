@@ -274,11 +274,11 @@ BEGIN
   RAM_INS_ADDR <= PC(10 downto 0); 
   memory: memo_stage port map (clk,reset,memo_control_signals,intr_mem,intr_wb,pc_reg,pc_flags,Rsrc,EA,RAM_INS_ADDR,RAM_INS_WR,RAM_INS_IN,RAM_INS_OUT,mem_out);
   IR <= (RAM_INS_OUT & zeros) when fetch_stall = '0' else (FDRegOut(15 downto 0) & RAM_INS_OUT);
-  FDRegIn <= int & reset & unpred_pc & IR & PC;
+  FDRegIn <= int & rst & unpred_pc & IR & PC;
   FDReg: regi generic map (98) port map (FDRegIn, '1',reset,clk,FDRegOut);
   
-  FD_pc_out <= FDRegout(31 downto 0);
   FD_ir_out <= FDRegout(63 downto 32);
+  FD_pc_out <= FDRegout(31 downto 0);
   --FD_unpred_pc_out <= FDRegout(95 downto 64);
   --FD_rst_out <= FDRegout(96);
   --FD_intr_out <= FDRegout(97);
