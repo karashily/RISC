@@ -18,6 +18,8 @@ entity ex_mem is
 	reset_mem_in : in std_logic;
         pc_in : in std_logic_vector(31 downto 0);
         unpred_pc_in : in std_logic_vector(31 downto 0);
+        swap_flag_in:in std_logic;
+        src1_value_in:in std_logic_vector(31 downto 0);
         -- out
         mem_cs_out : out std_logic_vector(6 downto 0);
         wb_cs_out : out std_logic_vector(3 downto 0);
@@ -32,7 +34,9 @@ entity ex_mem is
 	intr_mem_out : out std_logic;
 	reset_mem_out : out std_logic;
         pc_out : out std_logic_vector(31 downto 0);
-        unpred_pc_out : out std_logic_vector(31 downto 0)
+        unpred_pc_out : out std_logic_vector(31 downto 0);
+        swap_flag_out:out std_logic;
+        src1_value_out:out std_logic_vector(31 downto 0)
       );
 end ex_mem;
 
@@ -65,6 +69,7 @@ begin
     intr: onebitreg port map(d=>intr_mem_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>intr_mem_out);
 	pc: reg generic map(32) port map(d=>pc_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>pc_out);
     unpred_pc: reg generic map(32) port map(d=>unpred_pc_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>unpred_pc_out);
-    
+    Swap_Flag:onebitreg port map(d=>swap_flag_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>swap_flag_out);
+    src1Value: reg generic map(32) port map(d=>src1_value_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>src1_value_out);
 end architecture;
 

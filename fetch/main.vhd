@@ -115,6 +115,8 @@ signal  ex_mem_unpred_pc_in :  std_logic_vector(31 downto 0);
 signal flag_reg_out:std_logic_vector(3 downto 0);
 signal flag_reg_in:std_logic_vector(3 downto 0);
 signal ex_flag_reg_out:std_logic_vector(3 downto 0);
+signal ex_swap_flag_in: std_logic;
+signal ex_src1_value_in: std_logic_vector(31 downto 0);
 --ex_mem register out signals
  signal ex_mem_cs_out :  std_logic_vector(6 downto 0);
  signal ex_wb_cs_out :  std_logic_vector(3 downto 0);
@@ -130,7 +132,8 @@ signal ex_flag_reg_out:std_logic_vector(3 downto 0);
  signal ex_reset_mem_out :  std_logic;
  signal ex_pc_out :  std_logic_vector(31 downto 0);
  signal ex_unpred_pc_out :  std_logic_vector(31 downto 0);
-
+signal ex_swap_flag_out: std_logic;
+signal ex_src1_value_out: std_logic_vector(31 downto 0);
 -- wb out signals
 signal wb_val_out : std_logic_vector(31 downto 0) := (others=>'0');
 signal wb_addr_out : std_logic_vector(2 downto 0) := (others=>'0');
@@ -181,7 +184,9 @@ GENERIC (n : integer := 32);
 			 Rst:IN std_logic;
 			 flag_reg_in:IN std_logic_vector(3 downto 0);
 			 flag_reg_out:OUT std_logic_vector(3 downto 0);
-			 ALU_OUTPUT: INOUT  std_logic_vector(n-1 downto 0)
+       ALU_OUTPUT: INOUT  std_logic_vector(n-1 downto 0);
+       swap_flag:OUT std_logic;
+       Rsrc1_value:OUT std_logic_vector(n-1 downto 0)
 			 ); 
 end component;
 
@@ -327,6 +332,8 @@ component ex_mem is
   reset_mem_in : in std_logic;
   pc_in : in std_logic_vector(31 downto 0);
   unpred_pc_in : in std_logic_vector(31 downto 0);
+  swap_flag_in:in std_logic;
+  src1_value_in:in std_logic_vector(31 downto 0);
   -- out
   mem_cs_out : out std_logic_vector(6 downto 0);
   wb_cs_out : out std_logic_vector(3 downto 0);
@@ -341,7 +348,9 @@ component ex_mem is
   intr_mem_out : out std_logic;
   reset_mem_out : out std_logic;
   pc_out : out std_logic_vector(31 downto 0);
-  unpred_pc_out : out std_logic_vector(31 downto 0)
+  unpred_pc_out : out std_logic_vector(31 downto 0);
+  swap_flag_out:out std_logic;
+  src1_value_out:out std_logic_vector(31 downto 0)
 		  );
 end component;
 
@@ -412,7 +421,7 @@ BEGIN
   execution_stage: excute generic map (32) port map(clk,idex_src1_val_out,idex_src2_val_out,
   idex_extended_imm_out,mem_src1_val_out,mem_src2_val_out,WB_src1_val_out,WB_src2_val_out,
   idex_opcode_out,IO_IN,IO_OUT,ALU_output_selector,IO_output_selector,
-  src2_sel,ForwardUnit_src1_sel,ForwardUnit_src2_sel,reset,flag_reg_in,flag_reg_out,ex_mem_output_in);
+  src2_sel,ForwardUnit_src1_sel,ForwardUnit_src2_sel,reset,flag_reg_in,flag_reg_out,ex_mem_output_in,ex_swap_flag_in,ex_src1_value_in);
 
 
 
@@ -420,9 +429,11 @@ EX_MEM_REG:ex_mem port map (clk,idex_mem_cs_out,idex_wb_cs_out,
 idex_opcode_out,flag_reg_in,ex_mem_output_in,idex_src1_code_out,
 idex_src2_code_out,idex_dst_code_out,idex_extended_imm_out,idex_ea_out,
 idex_intr_out,idex_reset_out,idex_pc_out,idex_unpred_pc_out,
+ex_swap_flag_in,ex_src1_value_in,
 ex_mem_cs_out,ex_wb_cs_out,ex_opcode_out,ex_flag_reg_out,ex_output_out,
 ex_src1_code_out,ex_src2_code_out,ex_dst_code_out,ex_mem_extended_imm_out,ex_ea_out,ex_intr_mem_out,
-ex_reset_mem_out,ex_pc_out,ex_unpred_pc_out
+ex_reset_mem_out,ex_pc_out,ex_unpred_pc_out,
+ex_swap_flag_out,ex_src1_value_out
 );
 	
 	

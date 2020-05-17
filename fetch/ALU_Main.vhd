@@ -8,7 +8,9 @@ GENERIC (n : integer := 32);
 	     S: IN std_logic_vector(3 downto 0);
 	     Rst,flag_en:IN std_logic;
 	     F: INOUT  std_logic_vector(n-1 downto 0);
-	     flagReg_out: INOUT std_logic_vector(3 downto 0)); 
+		 flagReg_out: INOUT std_logic_vector(3 downto 0);
+		 swap_flag:OUT std_logic);
+		  
 END ENTITY ALU;
 
 ARCHITECTURE Data_flow OF ALU IS
@@ -87,4 +89,5 @@ Nflg<= '1' when F(n-1) = '1' else '0';
 flagReg_in<=  Z & Nflg & Cout & '0';
 flagReg_out<= flagReg_in when (EnableFlagReg ='1') else
 (OTHERS=>'0') when Rst='1';
+swap_flag<='1' when S="0111" else '0';
 end architecture;
