@@ -145,6 +145,7 @@ signal ex_src1_value_in: std_logic_vector(31 downto 0);
 -- wb out signals
 signal wb_val_out : std_logic_vector(31 downto 0) := (others=>'0');
 signal wb_addr_out : std_logic_vector(2 downto 0) := (others=>'0');
+signal wb_mem_out : std_logic_vector(31 downto 0) := (others=>'0');
 --WB outputs needed by excute
 signal WB_src1_val_out :  std_logic_vector(31 downto 0);
 signal WB_src2_val_out :  std_logic_vector(31 downto 0);
@@ -154,8 +155,8 @@ signal mem_src2_val_out :  std_logic_vector(31 downto 0);
 
 
 --excute signals
- signal IO_IN: std_logic_vector(n-1 downto 0);
-signal  IO_OUT:  std_logic_vector(n-1 downto 0);
+signal IO_IN: std_logic_vector(n-1 downto 0);
+signal IO_OUT:  std_logic_vector(n-1 downto 0);
 signal ALU_output_selector: std_logic;
 signal IO_output_selector:std_logic;
 signal ForwardUnit_src1_sel,ForwardUnit_src2_sel:std_logic_vector(1 downto 0);
@@ -395,6 +396,18 @@ component mem_wb is
     );
 end component;
 
+component wb is
+  port(opcode : in std_logic_vector(4 downto 0);
+      swap_flag, intr, reset: in std_logic;
+      wb_cs: in std_logic_vector(3 downto 0);
+      clk: in std_logic;
+      mem, exe, Rsrc1_val: in std_logic_vector(31 downto 0);
+      Rdst_code, Rsrc1_code, Rsrc2_code: in std_logic_vector(2 downto 0);
+      val_out: out std_logic_vector(31 downto 0);
+      addr_out: out std_logic_vector(2 downto 0);
+      mem_out: out std_logic_vector(31 downto 0));
+end component;
+
 BEGIN
   fetch_component: fetch port map (A,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,prediction_bit,PC);
   hazard_unit: hazard_detection_unit port map (A,
@@ -508,5 +521,12 @@ pc_flags <= ex_flag_reg_out & ex_pc_out(27 downto 0);
         intr_wb_out => mem_intr_wb_out,
         reset_wb_out => mem_reset_wb_out
     );
+
+  
+write_back: wb port map (opcode => mem_opcode_out, swap_flag => mem_swap_flag_out, intr => mem_intr_wb_out, reset => mem_reset_wb_out, wb_cs => mem_wb_cs_out, clk => clk,
+      mem => mem_result_out, exe => mem_exe_out, Rsrc1_val => mem_src_val_out,
+      Rdst_code => mem_dst_code_out, Rsrc1_code => mem_src1_code_out, Rsrc2_code => mem_src2_code_out,
+      val_out => wb_val_out, addr_out => wb_addr_out, mem_out => wb_mem_out);
+
 	
 END main_arch;

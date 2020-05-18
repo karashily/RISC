@@ -66,7 +66,7 @@ begin
     ea: reg generic map(20) port map(d=>ea_in,clk=>clk,rst=>reset_in,load=>'1',q=>ea_out);
     pc: reg generic map(32) port map(d=>pc_in,clk=>clk,rst=>reset_in,load=>'1',q=>pc_out);
     unpred_pc: reg generic map(32) port map(d=>unpred_pc_in,clk=>clk,rst=>reset_in,load=>'1',q=>unpred_pc_out);
-    reset: onebitreg port map(d=>reset_in,clk=>clk,rst=>reset_in,load=>'1',q=>reset_out);
+    reset: onebitreg port map(d=>reset_in,clk=>clk,rst=>'0',load=>'1',q=>reset_out);
     intr: onebitreg port map(d=>intr_in,clk=>clk,rst=>reset_in,load=>'1',q=>intr_out);
 end architecture;
 
