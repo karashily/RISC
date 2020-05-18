@@ -474,8 +474,8 @@ BEGIN
   
   execution_stage: excute generic map (32) port map(clk,idex_src1_val_out,idex_src2_val_out,
   idex_extended_imm_out,mem_src1_val_out,mem_src2_val_out,WB_src1_val_out,WB_src2_val_out,
-  idex_opcode_out,IO_IN,IO_OUT,ALU_output_selector,IO_output_selector,
-  src2_sel,ForwardUnit_src1_sel,ForwardUnit_src2_sel,reset,flag_reg_in,flag_reg_out,ex_mem_output_in,ex_swap_flag_in,ex_src1_value_in);
+  idex_opcode_out,IO_IN,IO_OUT,idex_ex_cs_out(0),idex_ex_cs_out(1),
+  idex_ex_cs_out(2),ForwardUnit_src1_sel,ForwardUnit_src2_sel,reset,flag_reg_in,flag_reg_out,ex_mem_output_in,ex_swap_flag_in,ex_src1_value_in);
 
 
 
