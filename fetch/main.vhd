@@ -47,13 +47,7 @@ signal IR: std_logic_vector(31 downto 0) := (others => '0');
 
 
 -- signals for memory 
-signal memo_control_signals : std_logic_vector(6 downto 0);
-signal intr_mem: std_logic;
-signal intr_wb : std_logic;
-signal pc_reg : std_logic_vector(31 downto 0);
 signal pc_flags : std_logic_vector(31 downto 0);
-signal Rsrc : std_logic_vector(31 downto 0);
-signal EA : std_logic_vector(10 downto 0);
 signal RAM_INS_ADDR: std_logic_vector(10 downto 0);
 signal RAM_INS_WR: std_logic := '0';
 signal RAM_INS_IN: std_logic_vector(15 downto 0) := (others => '0');
@@ -132,8 +126,22 @@ signal ex_src1_value_in: std_logic_vector(31 downto 0);
  signal ex_reset_mem_out :  std_logic;
  signal ex_pc_out :  std_logic_vector(31 downto 0);
  signal ex_unpred_pc_out :  std_logic_vector(31 downto 0);
-signal ex_swap_flag_out: std_logic;
-signal ex_src1_value_out: std_logic_vector(31 downto 0);
+ signal ex_swap_flag_out: std_logic;
+ signal ex_src1_value_out: std_logic_vector(31 downto 0);
+
+--mem_wb register out signals
+ signal mem_wb_cs_out : std_logic_vector(3 downto 0);
+ signal mem_opcode_out : std_logic_vector(4 downto 0);
+ signal mem_result_out : std_logic_vector(31 downto 0);
+ signal mem_exe_out : std_logic_vector(31 downto 0);
+ signal mem_src_val_out : std_logic_vector(31 downto 0);
+ signal mem_src1_code_out : std_logic_vector(2 downto 0);
+ signal mem_src2_code_out : std_logic_vector(2 downto 0);
+ signal mem_dst_code_out : std_logic_vector(2 downto 0);   
+ signal mem_swap_flag_out : std_logic;
+ signal mem_intr_wb_out : std_logic;
+ signal mem_reset_wb_out : std_logic;
+
 -- wb out signals
 signal wb_val_out : std_logic_vector(31 downto 0) := (others=>'0');
 signal wb_addr_out : std_logic_vector(2 downto 0) := (others=>'0');
@@ -228,6 +236,7 @@ component hazard_detection_unit is
     );
 end component;
 
+--memory stage
 component memo_stage is
   port(
     clk ,rst :in std_logic;
@@ -242,6 +251,8 @@ component memo_stage is
     mem_out :out std_logic_vector(31 downto 0 )
   );
 end component;
+
+
 
 component regi IS
 generic( Nbits : positive := 16 );
@@ -354,6 +365,36 @@ component ex_mem is
 		  );
 end component;
 
+component mem_wb is
+  port(clk: in std_logic;
+        -- in
+        wb_cs_in : in std_logic_vector(3 downto 0);
+        opcode_in : in std_logic_vector(4 downto 0);
+	      mem_result_in :in std_logic_vector(31 downto 0);
+	      exe_in :in std_logic_vector(31 downto 0);
+	      src1_val :in std_logic_vector(31 downto 0);
+        src1_code_in : in std_logic_vector(2 downto 0);
+        src2_code_in : in std_logic_vector(2 downto 0);
+        dst_code_in : in std_logic_vector(2 downto 0);   
+	      swap_flag_in : in std_logic;
+        intr_wb_in : in std_logic;
+        reset_wb_in : in std_logic;
+         
+        -- out
+        wb_cs_out : out std_logic_vector(3 downto 0);
+        opcode_out : out std_logic_vector(4 downto 0);
+	      mem_result_out :out std_logic_vector(31 downto 0);
+	      exe_out :out std_logic_vector(31 downto 0);
+	      src1_val_out :out std_logic_vector(31 downto 0);
+        src1_code_out : out std_logic_vector(2 downto 0);
+        src2_code_out : out std_logic_vector(2 downto 0);
+        dst_code_out : out std_logic_vector(2 downto 0);   
+	      swap_flag_out : out std_logic;
+        intr_wb_out : out std_logic;
+        reset_wb_out : out std_logic
+    );
+end component;
+
 BEGIN
   fetch_component: fetch port map (A,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,prediction_bit,PC);
   hazard_unit: hazard_detection_unit port map (A,
@@ -385,8 +426,8 @@ BEGIN
 
 
   RAM_INS_ADDR <= PC(10 downto 0); 
-  memory: memo_stage port map (clk,reset,memo_control_signals,intr_mem,intr_wb,pc_reg,pc_flags,Rsrc,EA,RAM_INS_ADDR,RAM_INS_WR,RAM_INS_IN,RAM_INS_OUT,mem_out);
-  IR <= (RAM_INS_OUT & zeros) when fetch_stall = '0' else (FDRegOut(15 downto 0) & RAM_INS_OUT);
+  
+    IR <= (RAM_INS_OUT & zeros) when fetch_stall = '0' else (FDRegOut(15 downto 0) & RAM_INS_OUT);
   FDRegIn <= int & reset & unpred_pc & IR & PC;
   FDReg: regi generic map (98) port map (FDRegIn, '1',reset,clk,FDRegOut);
   
@@ -435,6 +476,37 @@ ex_src1_code_out,ex_src2_code_out,ex_dst_code_out,ex_mem_extended_imm_out,ex_ea_
 ex_reset_mem_out,ex_pc_out,ex_unpred_pc_out,
 ex_swap_flag_out,ex_src1_value_out
 );
-	
+ 
+pc_flags <= ex_flag_reg_out & ex_pc_out(27 downto 0);
+
+ memory: memo_stage port map (clk,ex_reset_mem_out,ex_mem_cs_out,ex_intr_mem_out,mem_intr_wb_out,ex_pc_out,pc_flags,ex_src1_value_out,ex_ea_out(10 downto 0),RAM_INS_ADDR,RAM_INS_WR,RAM_INS_IN,RAM_INS_OUT,mem_out);
+
+ MEM_WB_REG: mem_wb port map(clk => clk ,
+        -- in
+        wb_cs_in => ex_wb_cs_out,
+        opcode_in => ex_opcode_out,
+	      mem_result_in => mem_out,
+	      exe_in => ex_output_out,
+	      src1_val => ex_src1_value_out,
+        src1_code_in => ex_src1_code_out,
+        src2_code_in => ex_src2_code_out,
+        dst_code_in => ex_dst_code_out,
+	      swap_flag_in =>ex_swap_flag_out,
+        intr_wb_in => ex_intr_mem_out,
+        reset_wb_in => ex_reset_mem_out,
+         
+        -- out
+        wb_cs_out => mem_wb_cs_out,
+        opcode_out => mem_opcode_out,
+	      mem_result_out => mem_result_out,
+	      exe_out => mem_exe_out,
+	      src1_val_out => mem_src_val_out,
+        src1_code_out => mem_src1_code_out,
+        src2_code_out => mem_src2_code_out,
+        dst_code_out => mem_dst_code_out,
+	      swap_flag_out => mem_swap_flag_out,
+        intr_wb_out => mem_intr_wb_out,
+        reset_wb_out => mem_reset_wb_out
+    );
 	
 END main_arch;
