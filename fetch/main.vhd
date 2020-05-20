@@ -329,41 +329,41 @@ end component;
 
 component ex_mem is
 	port(clk: in std_logic;
-  -- in
-  mem_cs_in : in std_logic_vector(6 downto 0);
-  wb_cs_in : in std_logic_vector(3 downto 0);
-  opcode_in : in std_logic_vector(4 downto 0);
-  flags_in:in std_logic_vector(3 downto 0);
-  output_in:in std_logic_vector(31 downto 0);
-  src1_code_in : in std_logic_vector(2 downto 0);
-  src2_code_in : in std_logic_vector(2 downto 0);
-  dst_code_in : in std_logic_vector(2 downto 0);
-  extended_imm_in:out std_logic_vector (31 downto 0);
-  ea_in : in std_logic_vector(19 downto 0);
-  intr_mem_in : in std_logic;
-  reset_mem_in : in std_logic;
-  pc_in : in std_logic_vector(31 downto 0);
-  unpred_pc_in : in std_logic_vector(31 downto 0);
-  swap_flag_in:in std_logic;
-  src1_value_in:in std_logic_vector(31 downto 0);
-  -- out
-  mem_cs_out : out std_logic_vector(6 downto 0);
-  wb_cs_out : out std_logic_vector(3 downto 0);
-  opcode_out : out std_logic_vector(4 downto 0);
-  flags_out:out std_logic_vector(3 downto 0);
-  output_out:out std_logic_vector(31 downto 0);
-  src1_code_out : out std_logic_vector(2 downto 0);
-  src2_code_out : out std_logic_vector(2 downto 0);
-  dst_code_out : out std_logic_vector(2 downto 0);
-  extended_imm_out:out std_logic_vector (31 downto 0);
-  ea_out : out std_logic_vector(19 downto 0);
-  intr_mem_out : out std_logic;
-  reset_mem_out : out std_logic;
-  pc_out : out std_logic_vector(31 downto 0);
-  unpred_pc_out : out std_logic_vector(31 downto 0);
-  swap_flag_out:out std_logic;
-  src1_value_out:out std_logic_vector(31 downto 0)
-		  );
+        -- in
+        mem_cs_in : in std_logic_vector(6 downto 0);
+        wb_cs_in : in std_logic_vector(3 downto 0);
+        opcode_in : in std_logic_vector(4 downto 0);
+	flags_in:in std_logic_vector(3 downto 0);
+	output_in:in std_logic_vector(31 downto 0);
+        src1_code_in : in std_logic_vector(2 downto 0);
+        src2_code_in : in std_logic_vector(2 downto 0);
+        dst_code_in : in std_logic_vector(2 downto 0);
+        extended_imm_in:in std_logic_vector (31 downto 0);
+        ea_in : in std_logic_vector(19 downto 0);
+	intr_mem_in : in std_logic;
+	reset_mem_in : in std_logic;
+        pc_in : in std_logic_vector(31 downto 0);
+        unpred_pc_in : in std_logic_vector(31 downto 0);
+        swap_flag_in:in std_logic;
+        src1_value_in:in std_logic_vector(31 downto 0);
+        -- out
+        mem_cs_out : out std_logic_vector(6 downto 0);
+        wb_cs_out : out std_logic_vector(3 downto 0);
+        opcode_out : out std_logic_vector(4 downto 0);
+	flags_out:out std_logic_vector(3 downto 0);
+	output_out:out std_logic_vector(31 downto 0);
+        src1_code_out : out std_logic_vector(2 downto 0);
+        src2_code_out : out std_logic_vector(2 downto 0);
+        dst_code_out : out std_logic_vector(2 downto 0);
+        extended_imm_out:out std_logic_vector (31 downto 0);
+        ea_out : out std_logic_vector(19 downto 0);
+	intr_mem_out : out std_logic;
+	reset_mem_out : out std_logic;
+        pc_out : out std_logic_vector(31 downto 0);
+        unpred_pc_out : out std_logic_vector(31 downto 0);
+        swap_flag_out:out std_logic;
+        src1_value_out:out std_logic_vector(31 downto 0)
+      );
 end component;
 
 component mem_wb is
@@ -443,7 +443,7 @@ BEGIN
   
     IR <= (RAM_INS_OUT & zeros) when fetch_stall = '0' else (FDRegOut(15 downto 0) & RAM_INS_OUT);
   FDRegIn <= int & reset & unpred_pc & IR & PC;
-  FDReg: regi generic map (98) port map (FDRegIn, '1',reset,clk,FDRegOut);
+  FDReg: regi generic map (98) port map (FDRegIn, '1','0',clk,FDRegOut);
   
   FD_pc_out <= FDRegout(31 downto 0);
   FD_ir_out <= FDRegout(63 downto 32);
