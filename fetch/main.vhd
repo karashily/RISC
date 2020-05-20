@@ -409,6 +409,7 @@ component wb is
 end component;
 
 BEGIN
+  PC_flags_mem <= wb_mem_out;
   fetch_component: fetch port map (A,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,prediction_bit,PC);
   hazard_unit: hazard_detection_unit port map (A,
                                                clk,
