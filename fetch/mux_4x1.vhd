@@ -19,7 +19,7 @@ component mux2_1
            SEL : in  STD_LOGIC;
            X   : out STD_LOGIC_VECTOR (N-1 downto 0));
 end component;
-signal temp1, temp2: STD_LOGIC_VECTOR (N-1 downto 0);
+signal temp1, temp2: STD_LOGIC_VECTOR (N-1 downto 0) := (others => '0');
  
 begin
 m1: mux2_1  generic map (N   => N) port map(A,B,S0,temp1);

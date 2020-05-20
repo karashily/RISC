@@ -16,39 +16,39 @@ PORT(
 END main;
 
 ARCHITECTURE main_arch OF main IS
-signal prediction_bit : std_logic;
-signal Rdst_val: std_logic_vector(31 downto 0);
-signal PC_flags_mem: std_logic_vector(31 downto 0);
-signal unpredicted_PC_E: std_logic_vector(31 downto 0);
+signal prediction_bit : std_logic := '0';
+signal Rdst_val: std_logic_vector(31 downto 0) := (others => '0');
+signal PC_flags_mem: std_logic_vector(31 downto 0) := (others => '0');
+signal unpredicted_PC_E: std_logic_vector(31 downto 0) := (others => '0');
 signal load_ret_PC: std_logic := '0';
 signal wrong_prediction_bit: std_logic := '0';
-signal PC_load: std_logic;
-signal PC: std_logic_vector(31 downto 0);
-signal opcode_FD: STD_LOGIC_VECTOR (4 DOWNTO 0);
-signal opcode_DE: STD_LOGIC_VECTOR (4 DOWNTO 0);
-signal opcode_EM: STD_LOGIC_VECTOR (4 DOWNTO 0);
-signal opcode_MW: STD_LOGIC_VECTOR (4 DOWNTO 0);
-signal Rdst_FD_code: STD_LOGIC_VECTOR (2 DOWNTO 0);
-signal Rdst_DE_code: STD_LOGIC_VECTOR (2 DOWNTO 0);
-signal Rdst_EM_code: STD_LOGIC_VECTOR (2 DOWNTO 0);
-signal Rdst_MW_code: STD_LOGIC_VECTOR (2 DOWNTO 0);
-signal Rsrc1_DE_code: STD_LOGIC_VECTOR (2 DOWNTO 0);
-signal Rsrc1_EM_code: STD_LOGIC_VECTOR (2 DOWNTO 0);
-signal Rsrc1_MW_code: STD_LOGIC_VECTOR (2 DOWNTO 0);
-signal Rsrc2_DE_code: STD_LOGIC_VECTOR (2 DOWNTO 0);
-signal ZF: STD_LOGIC;
-signal INT_EM: STD_LOGIC;
-signal RESET_EM: STD_LOGIC;
-signal control_unit_mux: STD_LOGIC;
-signal fetch_stall: STD_LOGIC;
+signal PC_load: std_logic := '0';
+signal PC: std_logic_vector(31 downto 0) := (others => '0');
+signal opcode_FD: STD_LOGIC_VECTOR (4 DOWNTO 0) := (others => '0');
+signal opcode_DE: STD_LOGIC_VECTOR (4 DOWNTO 0) := (others => '0');
+signal opcode_EM: STD_LOGIC_VECTOR (4 DOWNTO 0) := (others => '0');
+signal opcode_MW: STD_LOGIC_VECTOR (4 DOWNTO 0) := (others => '0');
+signal Rdst_FD_code: STD_LOGIC_VECTOR (2 DOWNTO 0) := (others => '0');
+signal Rdst_DE_code: STD_LOGIC_VECTOR (2 DOWNTO 0) := (others => '0');
+signal Rdst_EM_code: STD_LOGIC_VECTOR (2 DOWNTO 0) := (others => '0');
+signal Rdst_MW_code: STD_LOGIC_VECTOR (2 DOWNTO 0) := (others => '0');
+signal Rsrc1_DE_code: STD_LOGIC_VECTOR (2 DOWNTO 0) := (others => '0');
+signal Rsrc1_EM_code: STD_LOGIC_VECTOR (2 DOWNTO 0) := (others => '0');
+signal Rsrc1_MW_code: STD_LOGIC_VECTOR (2 DOWNTO 0) := (others => '0');
+signal Rsrc2_DE_code: STD_LOGIC_VECTOR (2 DOWNTO 0) := (others => '0');
+signal ZF: STD_LOGIC := '0';
+signal INT_EM: STD_LOGIC := '0';
+signal RESET_EM: STD_LOGIC := '0';
+signal control_unit_mux: STD_LOGIC := '0';
+signal fetch_stall: STD_LOGIC := '0';
 
 
 signal IR: std_logic_vector(31 downto 0) := (others => '0');
 
 
 -- signals for memory 
-signal pc_flags : std_logic_vector(31 downto 0);
-signal RAM_INS_ADDR: std_logic_vector(10 downto 0);
+signal pc_flags : std_logic_vector(31 downto 0) := (others => '0');
+signal RAM_INS_ADDR: std_logic_vector(10 downto 0) := (others => '0');
 signal RAM_INS_WR: std_logic := '0';
 signal RAM_INS_IN: std_logic_vector(15 downto 0) := (others => '0');
 signal RAM_INS_OUT: std_logic_vector(15 downto 0 ) := (others => '0');
@@ -68,99 +68,99 @@ signal FDRegIn:  std_logic_vector(97 downto 0) :=  (others => '0');
 signal unpred_pc : std_logic_vector(31 downto 0) := (others => '0');
 
 -- signal between decode and id_ex
-signal dec_src1_code, dec_src2_code, dec_dst_code: std_logic_vector(2 downto 0);
-signal dec_Rsrc1_val, dec_Rsrc2_val, dec_extended_imm: std_logic_vector(31 downto 0);
-signal dec_ea: std_logic_vector (19 downto 0);
-signal dec_ex_cs: std_logic_vector(2 downto 0);
-signal dec_mem_cs: std_logic_vector(6 downto 0);
-signal dec_wb_cs: std_logic_vector(3 downto 0);
-signal dec_PC_out: std_logic_vector(31 downto 0);
-signal dec_unpred_PC_out: std_logic_vector(31 downto 0);
-signal dec_opcode: std_logic_vector(4 downto 0);
-signal dec_rst_out, dec_intr_out: std_logic;
+signal dec_src1_code, dec_src2_code, dec_dst_code: std_logic_vector(2 downto 0) := (others => '0');
+signal dec_Rsrc1_val, dec_Rsrc2_val, dec_extended_imm: std_logic_vector(31 downto 0) := (others => '0');
+signal dec_ea: std_logic_vector (19 downto 0) := (others => '0');
+signal dec_ex_cs: std_logic_vector(2 downto 0) := (others => '0');
+signal dec_mem_cs: std_logic_vector(6 downto 0) := (others => '0');
+signal dec_wb_cs: std_logic_vector(3 downto 0) := (others => '0');
+signal dec_PC_out: std_logic_vector(31 downto 0) := (others => '0');
+signal dec_unpred_PC_out: std_logic_vector(31 downto 0) := (others => '0');
+signal dec_opcode: std_logic_vector(4 downto 0) := (others => '0');
+signal dec_rst_out, dec_intr_out: std_logic := '0';
 
 -- id_ex signals
-signal idex_ex_cs_out : std_logic_vector(2 downto 0);
-signal idex_mem_cs_out : std_logic_vector(6 downto 0);
-signal idex_wb_cs_out : std_logic_vector(3 downto 0);
-signal idex_opcode_out : std_logic_vector(4 downto 0);
-signal idex_src1_val_out : std_logic_vector(31 downto 0);
-signal idex_src2_val_out : std_logic_vector(31 downto 0);
-signal idex_src1_code_out : std_logic_vector(2 downto 0);
-signal idex_src2_code_out : std_logic_vector(2 downto 0);
-signal idex_dst_code_out : std_logic_vector(2 downto 0);
-signal idex_extended_imm_out : std_logic_vector(31 downto 0);
-signal idex_ea_out : std_logic_vector(19 downto 0);
-signal idex_pc_out : std_logic_vector(31 downto 0);
-signal idex_unpred_pc_out : std_logic_vector(31 downto 0);
-signal idex_reset_out : std_logic;
-signal idex_intr_out : std_logic;
+signal idex_ex_cs_out : std_logic_vector(2 downto 0) := (others => '0');
+signal idex_mem_cs_out : std_logic_vector(6 downto 0) := (others => '0');
+signal idex_wb_cs_out : std_logic_vector(3 downto 0) := (others => '0');
+signal idex_opcode_out : std_logic_vector(4 downto 0) := (others => '0');
+signal idex_src1_val_out : std_logic_vector(31 downto 0) := (others => '0');
+signal idex_src2_val_out : std_logic_vector(31 downto 0) := (others => '0');
+signal idex_src1_code_out : std_logic_vector(2 downto 0) := (others => '0');
+signal idex_src2_code_out : std_logic_vector(2 downto 0) := (others => '0');
+signal idex_dst_code_out : std_logic_vector(2 downto 0) := (others => '0');
+signal idex_extended_imm_out : std_logic_vector(31 downto 0) := (others => '0');
+signal idex_ea_out : std_logic_vector(19 downto 0) := (others => '0');
+signal idex_pc_out : std_logic_vector(31 downto 0) := (others => '0');
+signal idex_unpred_pc_out : std_logic_vector(31 downto 0) := (others => '0');
+signal idex_reset_out : std_logic := '0';
+signal idex_intr_out : std_logic := '0';
 --ex_mem register input signals
-signal  ex_mem_flags_in: std_logic_vector(3 downto 0);
-signal	ex_mem_output_in: std_logic_vector(31 downto 0);
-signal  ex_mem_src1_code_in :  std_logic_vector(2 downto 0);
-signal  ex_mem_src2_code_in :  std_logic_vector(2 downto 0);
-signal  ex_mem_dst_code_in :  std_logic_vector(2 downto 0);
-signal  ex_mem_ea_in :  std_logic_vector(19 downto 0);
-signal	ex_mem_intr_mem_in :  std_logic;
-signal	ex_mem_reset_mem_in :  std_logic;
-signal  ex_mem_pc_in :  std_logic_vector(31 downto 0);
-signal  ex_mem_unpred_pc_in :  std_logic_vector(31 downto 0);
-signal flag_reg_out:std_logic_vector(3 downto 0);
-signal flag_reg_in:std_logic_vector(3 downto 0);
-signal ex_flag_reg_out:std_logic_vector(3 downto 0);
-signal ex_swap_flag_in: std_logic;
-signal ex_src1_value_in: std_logic_vector(31 downto 0);
+signal  ex_mem_flags_in: std_logic_vector(3 downto 0) := (others => '0');
+signal	ex_mem_output_in: std_logic_vector(31 downto 0) := (others => '0');
+signal  ex_mem_src1_code_in :  std_logic_vector(2 downto 0) := (others => '0');
+signal  ex_mem_src2_code_in :  std_logic_vector(2 downto 0) := (others => '0');
+signal  ex_mem_dst_code_in :  std_logic_vector(2 downto 0) := (others => '0');
+signal  ex_mem_ea_in :  std_logic_vector(19 downto 0) := (others => '0');
+signal	ex_mem_intr_mem_in :  std_logic := '0';
+signal	ex_mem_reset_mem_in :  std_logic := '0';
+signal  ex_mem_pc_in :  std_logic_vector(31 downto 0) := (others => '0');
+signal  ex_mem_unpred_pc_in :  std_logic_vector(31 downto 0) := (others => '0');
+signal flag_reg_out:std_logic_vector(3 downto 0) := (others => '0');
+signal flag_reg_in:std_logic_vector(3 downto 0) := (others => '0');
+signal ex_flag_reg_out:std_logic_vector(3 downto 0) := (others => '0');
+signal ex_swap_flag_in: std_logic := '0';
+signal ex_src1_value_in: std_logic_vector(31 downto 0) := (others => '0');
 --ex_mem register out signals
- signal ex_mem_cs_out :  std_logic_vector(6 downto 0);
- signal ex_wb_cs_out :  std_logic_vector(3 downto 0);
- signal ex_opcode_out :  std_logic_vector(4 downto 0);
- signal ex_flags_out: std_logic_vector(3 downto 0);
- signal ex_output_out: std_logic_vector(31 downto 0);
- signal ex_src1_code_out :  std_logic_vector(2 downto 0);
- signal ex_src2_code_out :  std_logic_vector(2 downto 0);
- signal ex_dst_code_out :  std_logic_vector(2 downto 0);
- signal ex_mem_extended_imm_out:std_logic_vector(31 downto 0);
- signal ex_ea_out :  std_logic_vector(19 downto 0);
- signal ex_intr_mem_out :  std_logic;
- signal ex_reset_mem_out :  std_logic;
- signal ex_pc_out :  std_logic_vector(31 downto 0);
- signal ex_unpred_pc_out :  std_logic_vector(31 downto 0);
- signal ex_swap_flag_out: std_logic;
- signal ex_src1_value_out: std_logic_vector(31 downto 0);
+ signal ex_mem_cs_out :  std_logic_vector(6 downto 0) := (others => '0');
+ signal ex_wb_cs_out :  std_logic_vector(3 downto 0) := (others => '0');
+ signal ex_opcode_out :  std_logic_vector(4 downto 0) := (others => '0');
+ signal ex_flags_out: std_logic_vector(3 downto 0) := (others => '0');
+ signal ex_output_out: std_logic_vector(31 downto 0) := (others => '0');
+ signal ex_src1_code_out :  std_logic_vector(2 downto 0) := (others => '0');
+ signal ex_src2_code_out :  std_logic_vector(2 downto 0) := (others => '0');
+ signal ex_dst_code_out :  std_logic_vector(2 downto 0) := (others => '0');
+ signal ex_mem_extended_imm_out:std_logic_vector(31 downto 0) := (others => '0');
+ signal ex_ea_out :  std_logic_vector(19 downto 0) := (others => '0');
+ signal ex_intr_mem_out :  std_logic := '0';
+ signal ex_reset_mem_out :  std_logic := '0';
+ signal ex_pc_out :  std_logic_vector(31 downto 0) := (others => '0');
+ signal ex_unpred_pc_out :  std_logic_vector(31 downto 0) := (others => '0');
+ signal ex_swap_flag_out: std_logic := '0';
+ signal ex_src1_value_out: std_logic_vector(31 downto 0) := (others => '0');
 
 --mem_wb register out signals
- signal mem_wb_cs_out : std_logic_vector(3 downto 0);
- signal mem_opcode_out : std_logic_vector(4 downto 0);
- signal mem_result_out : std_logic_vector(31 downto 0);
- signal mem_exe_out : std_logic_vector(31 downto 0);
- signal mem_src_val_out : std_logic_vector(31 downto 0);
- signal mem_src1_code_out : std_logic_vector(2 downto 0);
- signal mem_src2_code_out : std_logic_vector(2 downto 0);
- signal mem_dst_code_out : std_logic_vector(2 downto 0);   
- signal mem_swap_flag_out : std_logic;
- signal mem_intr_wb_out : std_logic;
- signal mem_reset_wb_out : std_logic;
+ signal mem_wb_cs_out : std_logic_vector(3 downto 0) := (others => '0');
+ signal mem_opcode_out : std_logic_vector(4 downto 0) := (others => '0');
+ signal mem_result_out : std_logic_vector(31 downto 0) := (others => '0');
+ signal mem_exe_out : std_logic_vector(31 downto 0) := (others => '0');
+ signal mem_src_val_out : std_logic_vector(31 downto 0) := (others => '0');
+ signal mem_src1_code_out : std_logic_vector(2 downto 0) := (others => '0');
+ signal mem_src2_code_out : std_logic_vector(2 downto 0) := (others => '0');
+ signal mem_dst_code_out : std_logic_vector(2 downto 0) := (others => '0');   
+ signal mem_swap_flag_out : std_logic := '0';
+ signal mem_intr_wb_out : std_logic := '0';
+ signal mem_reset_wb_out : std_logic := '0';
 
 -- wb out signals
 signal wb_val_out : std_logic_vector(31 downto 0) := (others=>'0');
 signal wb_addr_out : std_logic_vector(2 downto 0) := (others=>'0');
 signal wb_mem_out : std_logic_vector(31 downto 0) := (others=>'0');
 --WB outputs needed by excute
-signal WB_src1_val_out :  std_logic_vector(31 downto 0);
-signal WB_src2_val_out :  std_logic_vector(31 downto 0);
+signal WB_src1_val_out :  std_logic_vector(31 downto 0) := (others => '0');
+signal WB_src2_val_out :  std_logic_vector(31 downto 0) := (others => '0');
 --mem outputs needed by excute
-signal mem_src1_val_out :  std_logic_vector(31 downto 0);
-signal mem_src2_val_out :  std_logic_vector(31 downto 0);
+signal mem_src1_val_out :  std_logic_vector(31 downto 0) := (others => '0');
+signal mem_src2_val_out :  std_logic_vector(31 downto 0) := (others => '0');
 
 
 --excute signals
-signal IO_IN: std_logic_vector(n-1 downto 0);
-signal IO_OUT:  std_logic_vector(n-1 downto 0);
-signal ALU_output_selector: std_logic;
-signal IO_output_selector:std_logic;
-signal ForwardUnit_src1_sel,ForwardUnit_src2_sel:std_logic_vector(1 downto 0);
-signal src1_sel,src2_sel:std_logic;
+signal IO_IN: std_logic_vector(n-1 downto 0) := (others => '0');
+signal IO_OUT:  std_logic_vector(n-1 downto 0) := (others => '0');
+signal ALU_output_selector: std_logic := '0';
+signal IO_output_selector:std_logic := '0';
+signal ForwardUnit_src1_sel,ForwardUnit_src2_sel:std_logic_vector(1 downto 0) := (others => '0');
+signal src1_sel,src2_sel:std_logic := '0';
 component fetch is
     port(
         A: in STD_LOGIC_VECTOR (15 DOWNTO 0);
@@ -328,7 +328,7 @@ end component;
 
 
 component ex_mem is
-	port(clk: in std_logic;
+  port(clk: in std_logic;
         -- in
         mem_cs_in : in std_logic_vector(6 downto 0);
         wb_cs_in : in std_logic_vector(3 downto 0);
@@ -443,7 +443,7 @@ BEGIN
   
     IR <= (RAM_INS_OUT & zeros) when fetch_stall = '0' else (FDRegOut(15 downto 0) & RAM_INS_OUT);
   FDRegIn <= int & reset & unpred_pc & IR & PC;
-  FDReg: regi generic map (98) port map (FDRegIn, '1','0',clk,FDRegOut);
+  FDReg: regi generic map (98) port map (FDRegIn, '1',reset,clk,FDRegOut);
   
   FD_pc_out <= FDRegout(31 downto 0);
   FD_ir_out <= FDRegout(63 downto 32);
@@ -480,15 +480,39 @@ BEGIN
 
 
 
-EX_MEM_REG:ex_mem port map (clk,idex_mem_cs_out,idex_wb_cs_out,
-idex_opcode_out,flag_reg_in,ex_mem_output_in,idex_src1_code_out,
-idex_src2_code_out,idex_dst_code_out,idex_extended_imm_out,idex_ea_out,
-idex_intr_out,idex_reset_out,idex_pc_out,idex_unpred_pc_out,
-ex_swap_flag_in,ex_src1_value_in,
-ex_mem_cs_out,ex_wb_cs_out,ex_opcode_out,ex_flag_reg_out,ex_output_out,
-ex_src1_code_out,ex_src2_code_out,ex_dst_code_out,ex_mem_extended_imm_out,ex_ea_out,ex_intr_mem_out,
-ex_reset_mem_out,ex_pc_out,ex_unpred_pc_out,
-ex_swap_flag_out,ex_src1_value_out
+EX_MEM_REG:ex_mem port map (clk,
+                            idex_mem_cs_out,
+                            idex_wb_cs_out,
+                            idex_opcode_out,
+                            flag_reg_in,
+                            ex_mem_output_in,
+                            idex_src1_code_out,
+                            idex_src2_code_out,
+                            idex_dst_code_out,
+                            idex_extended_imm_out,
+                            idex_ea_out,
+                            idex_intr_out,
+                            idex_reset_out,
+                            idex_pc_out,
+                            idex_unpred_pc_out,
+                            ex_swap_flag_in,
+                            ex_src1_value_in,
+                            ex_mem_cs_out,
+                            ex_wb_cs_out,
+                            ex_opcode_out,
+                            ex_flag_reg_out,
+                            ex_output_out,
+                            ex_src1_code_out,
+                            ex_src2_code_out,
+                            ex_dst_code_out,
+                            ex_mem_extended_imm_out,
+                            ex_ea_out,
+                            ex_intr_mem_out,
+                            ex_reset_mem_out,
+                            ex_pc_out,
+                            ex_unpred_pc_out,
+                            ex_swap_flag_out,
+                            ex_src1_value_out
 );
  
 pc_flags <= ex_flag_reg_out & ex_pc_out(27 downto 0);
