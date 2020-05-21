@@ -180,25 +180,25 @@ component fetch is
 end component;
 
 
-component excute is 
+component EXEC_stage IS
 GENERIC (n : integer := 32);
 	PORT(clk:std_logic;
-			 Rsrc1,Rsrc2,imm,Rsrc1_mem,Rsrc2_mem,Rsrc1_WB,Rsrc2_WB: IN std_logic_vector(n-1 downto 0);
-			 opcode_in: IN std_logic_vector(4 downto 0);
-			 IO_IN:IN std_logic_vector(n-1 downto 0);
-			 IO_OUT: OUT std_logic_vector(n-1 downto 0);
-			 OUT_SEL:IN std_logic;
-			 IO_ALU_SEL:IN std_logic;
-			 Rsrc2_sel:IN std_logic;       -- 0=rsrc2    1 = imm
-			 Rsrc1_sel_forward,Rsrc2_sel_forward:IN std_logic_vector(1 downto 0); -- 00 = src value  01=mem value  10=wb value
-			 Rst:IN std_logic;
-			 flag_reg_in:IN std_logic_vector(3 downto 0);
-			 flag_reg_out:OUT std_logic_vector(3 downto 0);
-       ALU_OUTPUT: INOUT  std_logic_vector(n-1 downto 0);
-       swap_flag:OUT std_logic;
-       Rsrc1_value:OUT std_logic_vector(n-1 downto 0)
-			 ); 
-end component;
+	     Rsrc1,Rsrc2,imm,Rsrc1_mem,Rsrc2_mem,Rsrc1_WB,Rsrc2_WB: IN std_logic_vector(n-1 downto 0);
+	     opcode_in: IN std_logic_vector(4 downto 0);
+	     IO_IN:IN std_logic_vector(n-1 downto 0);
+	     IO_OUT: OUT std_logic_vector(n-1 downto 0);
+	     OUT_SEL:IN std_logic;
+	     IO_ALU_SEL:IN std_logic;
+	     Rsrc2_sel:IN std_logic;       -- 0=rsrc2    1 = imm
+	     Rsrc1_sel_forward,Rsrc2_sel_forward:IN std_logic_vector(1 downto 0); -- 00 = src value  01=mem value  10=wb value
+	     Rst:IN std_logic;
+	     flag_reg_in:IN std_logic_vector(3 downto 0);
+	     flag_reg_out:OUT std_logic_vector(3 downto 0);
+		 ALU_OUTPUT: INOUT  std_logic_vector(n-1 downto 0);
+		 swap_flag:OUT std_logic;
+		 Rsrc1_value:OUT std_logic_vector(n-1 downto 0)
+	     ); 
+END component;
 
 component hazard_detection_unit is
   port(
@@ -322,11 +322,12 @@ component id_ex is
         intr_out : out std_logic
       );
 end component;
-component flagRegster is
-port(C,PRE,RST : in std_logic;  
+
+component flag_Register is  
+  port(C,PRE,RST : in std_logic;  
         D : in  std_logic_vector (3 downto 0);  
         Q : out std_logic_vector (3 downto 0));  
-end component;
+end component; 
 
 
 component ex_mem is
@@ -476,11 +477,11 @@ BEGIN
     idex_reset_out, idex_intr_out);
 
 
-  flag_reg: flagRegster port map( clk,'0',reset,flag_reg_out,flag_reg_in) ;
+  flag_reg: flag_Register port map( clk,'0',reset,flag_reg_out,flag_reg_in) ;
   
   ZF<=flag_reg_out(0);
   
-  execution_stage: excute generic map (32) port map(clk,idex_src1_val_out,idex_src2_val_out,
+  execution_stage: EXEC_stage generic map (32) port map(clk,idex_src1_val_out,idex_src2_val_out,
   idex_extended_imm_out,mem_src1_val_out,mem_src2_val_out,WB_src1_val_out,WB_src2_val_out,
   idex_opcode_out,IO_IN,IO_OUT,idex_ex_cs_out(0),idex_ex_cs_out(1),
   idex_ex_cs_out(2),ForwardUnit_src1_sel,ForwardUnit_src2_sel,reset,flag_reg_in,flag_reg_out,ex_mem_output_in,ex_swap_flag_in,ex_src1_value_in);
@@ -558,7 +559,7 @@ pc_flags <= ex_flag_reg_out & ex_pc_out(27 downto 0);
 write_back: wb port map (opcode => mem_opcode_out, swap_flag => mem_swap_flag_out, intr => mem_intr_wb_out, reset => mem_reset_wb_out, wb_cs => mem_wb_cs_out, clk => clk,
       mem => mem_result_out, exe => mem_exe_out, Rsrc1_val => mem_src_val_out,
       Rdst_code => mem_dst_code_out, Rsrc1_code => mem_src1_code_out, Rsrc2_code => mem_src2_code_out,
-      val_out => wb_val_out, addr_out => wb_addr_out, mem_out => wb_mem_out);
+      wb_en => wb_en_out, val_out => wb_val_out, addr_out => wb_addr_out, mem_out => wb_mem_out);
 
 	
 END main_arch;

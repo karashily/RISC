@@ -29,6 +29,7 @@ architecture arch of wb is
     swap: swap_handler port map(opcode, swap_flag, wb_cs, clk, reset, val_sel, addr_sel);
     process(clk)
     begin
+        if(rising_edge(clk)) then
         case val_sel is
             when "01" => val_out <= mem; wb_en <= '1';
             when "10" => val_out <= exe; wb_en <= '1';
@@ -40,5 +41,6 @@ architecture arch of wb is
             when "10" => addr_out <= Rsrc2_code;
             when others => addr_out <= Rdst_code;
         end case;
+        end if;
     end process;
   end architecture;
