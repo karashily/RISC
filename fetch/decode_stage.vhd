@@ -2,7 +2,8 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity dec is
-  port( clk, rst_in, rst_out, intr_in, intr_out: std_logic;
+  port( clk, write_en, rst_in, intr_in : in std_logic;
+      rst_out, intr_out: out std_logic;
       ir: in std_logic_vector(31 downto 0);
       PC_in: in std_logic_vector(31 downto 0);
       Unpred_PC_in: in std_logic_vector(31 downto 0);
@@ -23,6 +24,7 @@ architecture arch of dec is
     component regfile is
         port(src1, src2, write_reg: in std_logic_vector(2 downto 0);
             write_val: in std_logic_vector(31 downto 0);
+            write_en: in std_logic;
             rst, clk: in std_logic;
             src1_val, src2_val: out std_logic_vector(31 downto 0));
     end component;
@@ -39,6 +41,7 @@ begin
         src2 => ir(23 downto 21),
         write_reg => wb_addr,
         write_val => wb_val,
+        write_en => write_en,
         rst => rst_in,
         clk => clk,
         src1_val => Rsrc1_val, 
@@ -51,24 +54,14 @@ begin
         mem_cs => mem_cs, 
         wb_cs => wb_cs);
 
-    process(clk, rst_in)
+    PC_out <= PC_in;
+    unpred_pc_out <= unpred_pc_in;
+    rst_out <= rst_in;
+    intr_out <= intr_in;
+
+    process(clk)
     begin
-        if rst_in = '1' then
-            src1_code <= (others => '0');
-            src2_code <= (others => '0');
-            dst_code <= (others => '0');
-            Rsrc1_val <= (others => '0');
-            Rsrc2_val <= (others => '0');
-            extended_imm <= (others => '0');
-            ea <= (others => '0');
-            ex_cs <= (others => '0');
-            mem_cs <= (others => '0');
-            wb_cs <= (others => '0');
-            PC_out <= (others => '0');
-            unpred_pc_out <= (others => '0');
-            opcode <= (others => '0');
-            
-        elsif(falling_edge(clk)) then
+        if(falling_edge(clk)) then
             opcode <= ir(31 downto 27);
             src1_code <= ir(26 downto 24);
             src2_code <= ir(23 downto 21);
@@ -76,8 +69,6 @@ begin
             extended_imm (15 downto 0) <= ir(15 downto 0);
             extended_imm (31 downto 16) <= (others => ir(15));
             ea <= ir(19 downto 0);
-            PC_out <= PC_in;
-            unpred_pc_out <= unpred_pc_in;
         end if;
     end process;
 end architecture;

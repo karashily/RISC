@@ -47,17 +47,17 @@ end component;
 
 begin
  
-    wb_cs: reg generic map(4) port map(d=>wb_cs_in,clk=>clk,rst=>reset_wb_in,load=>'1',q=>wb_cs_out);
-    opcode: reg generic map(5) port map(d=>opcode_in,clk=>clk,rst=>reset_wb_in,load=>'1',q=>opcode_out);
-    mem_result:reg generic map(32) port map(d=>mem_result_in,clk=>clk,rst=>reset_wb_in,load=>'1',q=>mem_result_out);
-	  ex_result:reg generic map(32) port map(d=>exe_in,clk=>clk,rst=>reset_wb_in,load=>'1',q=>exe_out);
-	  src_val:reg generic map(32) port map(d=>src1_val,clk=>clk,rst=>reset_wb_in,load=>'1',q=>src1_val_out);
-	  src1_code: reg generic map(3) port map(d=>src1_code_in,clk=>clk,rst=>reset_wb_in,load=>'1',q=>src1_code_out);
-    src2_code: reg generic map(3) port map(d=>src2_code_in,clk=>clk,rst=>reset_wb_in,load=>'1',q=>src2_code_out);
-    dst_code: reg generic map(3) port map(d=>dst_code_in,clk=>clk,rst=>reset_wb_in,load=>'1',q=>dst_code_out);
+    wb_cs: reg generic map(4) port map(d=>wb_cs_in,clk=>clk,rst=>'0',load=>'1',q=>wb_cs_out);
+    opcode: reg generic map(5) port map(d=>opcode_in,clk=>clk,rst=>'0',load=>'1',q=>opcode_out);
+    mem_result:reg generic map(32) port map(d=>mem_result_in,clk=>clk,rst=>'0',load=>'1',q=>mem_result_out);
+	  ex_result:reg generic map(32) port map(d=>exe_in,clk=>clk,rst=>'0',load=>'1',q=>exe_out);
+	  src_val:reg generic map(32) port map(d=>src1_val,clk=>clk,rst=>'0',load=>'1',q=>src1_val_out);
+	  src1_code: reg generic map(3) port map(d=>src1_code_in,clk=>clk,rst=>'0',load=>'1',q=>src1_code_out);
+    src2_code: reg generic map(3) port map(d=>src2_code_in,clk=>clk,rst=>'0',load=>'1',q=>src2_code_out);
+    dst_code: reg generic map(3) port map(d=>dst_code_in,clk=>clk,rst=>'0',load=>'1',q=>dst_code_out);
     reset: onebitreg port map(d=>reset_wb_in,clk=>clk,rst=>'0',load=>'1',q=>reset_wb_out);
-    intr: onebitreg port map(d=>intr_wb_in,clk=>clk,rst=>reset_wb_in,load=>'1',q=>intr_wb_out);
-	  sf: onebitreg port map(d=>swap_flag_in,clk=>clk,rst=>reset_wb_in,load=>'1',q=>swap_flag_out);
+    intr: onebitreg port map(d=>intr_wb_in,clk=>clk,rst=>'0',load=>'1',q=>intr_wb_out);
+	  sf: onebitreg port map(d=>swap_flag_in,clk=>clk,rst=>'0',load=>'1',q=>swap_flag_out);
     
 end architecture;
 

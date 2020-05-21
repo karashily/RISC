@@ -8,6 +8,7 @@ entity wb is
       clk: in std_logic;
       mem, exe, Rsrc1_val: in std_logic_vector(31 downto 0);
       Rdst_code, Rsrc1_code, Rsrc2_code: in std_logic_vector(2 downto 0);
+      wb_en: out std_logic;
       val_out: out std_logic_vector(31 downto 0);
       addr_out: out std_logic_vector(2 downto 0);
       mem_out: out std_logic_vector(31 downto 0));
@@ -29,11 +30,11 @@ architecture arch of wb is
     process(clk)
     begin
         case val_sel is
-            when "01" => val_out <= mem;
-            when "10" => val_out <= exe;
-            when "11" => val_out <= Rsrc1_val;
-            when others => val_out <= (others => 'Z');
-        end case; 
+            when "01" => val_out <= mem; wb_en <= '1';
+            when "10" => val_out <= exe; wb_en <= '1';
+            when "11" => val_out <= Rsrc1_val; wb_en <= '1';
+            when others => val_out <= (others => 'Z'); wb_en <= '0';
+        end case;
         case addr_sel is
             when "01" => addr_out <= Rsrc1_code;
             when "10" => addr_out <= Rsrc2_code;

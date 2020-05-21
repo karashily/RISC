@@ -4,6 +4,7 @@ use ieee.std_logic_1164.all;
 entity regfile is
   port(src1, src2, write_reg: in std_logic_vector(2 downto 0);
       write_val: in std_logic_vector(31 downto 0);
+      write_en: in std_logic;
       rst, clk: in std_logic;
       src1_val, src2_val: out std_logic_vector(31 downto 0));
 end regfile;
@@ -45,30 +46,29 @@ architecture arch of regfile is
     reg6: reg generic map (n=>32) port map(d=>write_val, clk=>clk, rst=>rst, load=>load6, q=>q6);
     reg7: reg generic map (n=>32) port map(d=>write_val, clk=>clk, rst=>rst, load=>load7, q=>q7);
 
+
+    src1_val <= q0 when src1 = "000" else
+        q1 when src1 = "001" else
+        q2 when src1 = "010" else
+        q3 when src1 = "011" else
+        q4 when src1 = "100" else
+        q5 when src1 = "101" else
+        q6 when src1 = "110" else
+        q7;
+
+
+    src2_val <= q0 when src2 = "000" else
+        q1 when src2 = "001" else
+        q2 when src2 = "010" else
+        q3 when src2 = "011" else
+        q4 when src2 = "100" else
+        q5 when src2 = "101" else
+        q6 when src2 = "110" else
+        q7;
+
     process(clk, rst)
       begin
-        if falling_edge(clk) then
-            case src1 is
-                when "000" => src1_val <= q0;
-                when "001" => src1_val <= q1;
-                when "010" => src1_val <= q2;
-                when "011" => src1_val <= q3;
-                when "100" => src1_val <= q4;
-                when "101" => src1_val <= q5;
-                when "110" => src1_val <= q6;
-                when others => src1_val <= q7;
-            end case;
-            case src2 is
-                when "000" => src2_val <= q0;
-                when "001" => src2_val <= q1;
-                when "010" => src2_val <= q2;
-                when "011" => src2_val <= q3;
-                when "100" => src2_val <= q4;
-                when "101" => src2_val <= q5;
-                when "110" => src2_val <= q6;
-                when others => src2_val <= q7;
-            end case;
-        elsif rising_edge(clk) then
+        if rising_edge(clk) and write_en = '1' then
             case write_reg is
                 when "000" =>
                     load0 <= '1';
@@ -152,6 +152,15 @@ architecture arch of regfile is
                     load6 <= '0';
                     load7 <= '0';
             end case;
+        else
+            load0 <= '0';
+            load1 <= '0';
+            load2 <= '0';
+            load3 <= '0';
+            load4 <= '0';
+            load5 <= '0';
+            load6 <= '0';
+            load7 <= '0';
         end if;
     end process;
   end architecture;

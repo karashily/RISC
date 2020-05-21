@@ -73,6 +73,13 @@ architecture arch of memo_stage is
       rd_wr_sel ,sp_load ,sp_alu: out std_logic;
       val_sel , add_sel: out std_logic_vector(1 downto 0));
   end component;
+
+  component sp is
+    generic (n:integer := 32);
+  port(d : in std_logic_vector(n-1 downto 0);
+      clk, rst, load: in std_logic;
+      q: out std_logic_vector(n-1 downto 0));
+  end component;
   
   --Handeler signals 
   signal rd_wr_sel_s,sp_load_s,sp_alu_s : std_logic;
@@ -101,7 +108,7 @@ architecture arch of memo_stage is
      mux_add:mux4_1 generic map(N=> 11) port map (A  =>"00000000001" ,B  => "00000000011",C  => EA,D => sp_mux_out_s,
       S0  =>add_sel_s(0) ,S1 =>add_sel_s(1) , Z => add_out_s);
       
-     sp:reg  generic map (N=> 11) port map(d =>sp_in_s , clk => clk, rst=>rst , load =>sp_load_s , q => sp_out_s);
+     stack_pointer:sp  generic map (N=> 11) port map(d =>sp_in_s , clk => clk, rst=>rst , load =>sp_load_s , q => sp_out_s);
       
      alu:small_alu generic map(N=> 11) port map(d =>sp_out_s , clk => clk, rst => rst, control => sp_alu_s, q => sp_in_s);
        

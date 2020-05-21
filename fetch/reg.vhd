@@ -9,13 +9,15 @@ entity reg is
 end reg;
 
 architecture arch of reg is
+  signal qq : std_logic_vector(n-1 DOWNTO 0) := (others => '0');
   begin
+    q <= qq;
     process(clk, rst)
       begin
         if(rst ='1') then
-          q <= (others=>'0');
+          qq <= (others=>'0');
         elsif rising_edge(clk) and load = '1' then
-          q <= d;
+          qq <= d;
         end if;
     end process;
   end architecture;

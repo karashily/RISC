@@ -6,16 +6,14 @@ use ieee.numeric_std.all;
 ENTITY main IS 
 GENERIC (n : integer := 32);
 PORT(
-    A: in STD_LOGIC_VECTOR (15 DOWNTO 0);
     clk: in std_logic;
     reset: in std_logic;
     int: in std_logic
-
-
 );
 END main;
 
 ARCHITECTURE main_arch OF main IS
+signal instruction : std_logic_vector(15 downto 0) := (others =>'0');
 signal prediction_bit : std_logic := '0';
 signal Rdst_val: std_logic_vector(31 downto 0) := (others => '0');
 signal PC_flags_mem: std_logic_vector(31 downto 0) := (others => '0');
@@ -95,6 +93,7 @@ signal idex_pc_out : std_logic_vector(31 downto 0) := (others => '0');
 signal idex_unpred_pc_out : std_logic_vector(31 downto 0) := (others => '0');
 signal idex_reset_out : std_logic := '0';
 signal idex_intr_out : std_logic := '0';
+
 --ex_mem register input signals
 signal  ex_mem_flags_in: std_logic_vector(3 downto 0) := (others => '0');
 signal	ex_mem_output_in: std_logic_vector(31 downto 0) := (others => '0');
@@ -111,6 +110,7 @@ signal flag_reg_in:std_logic_vector(3 downto 0) := (others => '0');
 signal ex_flag_reg_out:std_logic_vector(3 downto 0) := (others => '0');
 signal ex_swap_flag_in: std_logic := '0';
 signal ex_src1_value_in: std_logic_vector(31 downto 0) := (others => '0');
+
 --ex_mem register out signals
  signal ex_mem_cs_out :  std_logic_vector(6 downto 0) := (others => '0');
  signal ex_wb_cs_out :  std_logic_vector(3 downto 0) := (others => '0');
@@ -146,6 +146,7 @@ signal ex_src1_value_in: std_logic_vector(31 downto 0) := (others => '0');
 signal wb_val_out : std_logic_vector(31 downto 0) := (others=>'0');
 signal wb_addr_out : std_logic_vector(2 downto 0) := (others=>'0');
 signal wb_mem_out : std_logic_vector(31 downto 0) := (others=>'0');
+signal wb_en_out : std_logic := '0';
 --WB outputs needed by excute
 signal WB_src1_val_out :  std_logic_vector(31 downto 0) := (others => '0');
 signal WB_src2_val_out :  std_logic_vector(31 downto 0) := (others => '0');
@@ -267,7 +268,8 @@ PORT(
 END component;
 
 component dec is
-  port( clk, rst_in, rst_out, intr_in, intr_out: std_logic;
+  port( clk, write_en, rst_in, intr_in : in std_logic;
+      rst_out, intr_out: out std_logic;
       ir: in std_logic_vector(31 downto 0);
       PC_in: in std_logic_vector(31 downto 0);
       Unpred_PC_in: in std_logic_vector(31 downto 0);
@@ -403,6 +405,7 @@ component wb is
       clk: in std_logic;
       mem, exe, Rsrc1_val: in std_logic_vector(31 downto 0);
       Rdst_code, Rsrc1_code, Rsrc2_code: in std_logic_vector(2 downto 0);
+      wb_en: out std_logic;
       val_out: out std_logic_vector(31 downto 0);
       addr_out: out std_logic_vector(2 downto 0);
       mem_out: out std_logic_vector(31 downto 0));
@@ -410,8 +413,10 @@ end component;
 
 BEGIN
   PC_flags_mem <= wb_mem_out;
-  fetch_component: fetch port map (A,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,prediction_bit,PC);
-  hazard_unit: hazard_detection_unit port map (A,
+  reset_em <= ex_reset_mem_out;
+  int_em <= ex_intr_mem_out;
+  fetch_component: fetch port map (instruction,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,prediction_bit,PC);
+  hazard_unit: hazard_detection_unit port map (instruction,
                                                clk,
                                                reset,
                                                prediction_bit,
@@ -439,20 +444,22 @@ BEGIN
                                                );
 
 
-  RAM_INS_ADDR <= PC(10 downto 0); 
-  
-    IR <= (RAM_INS_OUT & zeros) when fetch_stall = '0' else (FDRegOut(15 downto 0) & RAM_INS_OUT);
+ 
+  instruction <= RAM_INS_OUT;
+
+  RAM_INS_ADDR <= PC(10 downto 0);
+  IR <= (RAM_INS_OUT & zeros) when fetch_stall = '0' else (FDRegOut(47 downto 32) & RAM_INS_OUT) when fetch_stall = '1';
   FDRegIn <= int & reset & unpred_pc & IR & PC;
-  FDReg: regi generic map (98) port map (FDRegIn, '1',reset,clk,FDRegOut);
+  FDReg: regi generic map (98) port map (FDRegIn, '1','0',clk,FDRegOut);
   
   FD_pc_out <= FDRegout(31 downto 0);
   FD_ir_out <= FDRegout(63 downto 32);
-  --FD_unpred_pc_out <= FDRegout(95 downto 64);
-  --FD_rst_out <= FDRegout(96);
-  --FD_intr_out <= FDRegout(97);
+  FD_unpred_pc_out <= FDRegout(95 downto 64);
+  FD_rst_out <= FDRegout(96);
+  FD_intr_out <= FDRegout(97);
 
 
-  decode_stage: dec port map(clk, FD_rst_out, dec_rst_out, FD_intr_out, dec_intr_out, FD_IR_out, FD_PC_out, FD_Unpred_PC_out, wb_val_out, wb_addr_out,
+  decode_stage: dec port map(clk, wb_en_out, FD_rst_out, FD_intr_out, dec_rst_out, dec_intr_out, FD_IR_out, FD_PC_out, FD_Unpred_PC_out, wb_val_out, wb_addr_out,
     dec_src1_code, dec_src2_code, dec_dst_code, dec_Rsrc1_val, dec_Rsrc2_val, dec_extended_imm, dec_ea, 
     dec_ex_cs, dec_mem_cs, dec_wb_cs, dec_PC_out, dec_unpred_PC_out, dec_opcode);
 
