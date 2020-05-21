@@ -11,12 +11,12 @@ end swap_handler;
  
 architecture arch of swap_handler is
   begin
-    process(clk, rst)
+    process(rst, opcode, swap_flag)
     begin
         if(rst ='1') then
             val_sel <= "00";
             addr_sel <= "00";
-        elsif rising_edge(clk) then
+        else
             If Opcode = "00111" and swap_flag = '1' then
                 val_sel <= "10";
                 addr_sel <= "01";

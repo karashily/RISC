@@ -13,15 +13,15 @@ PORT(
 END main;
 
 ARCHITECTURE main_arch OF main IS
-signal instruction : std_logic_vector(15 downto 0) := (others =>'0');
+signal instruction : std_logic_vector(15 downto 0);
 signal prediction_bit : std_logic := '0';
-signal Rdst_val: std_logic_vector(31 downto 0) := (others => '0');
-signal PC_flags_mem: std_logic_vector(31 downto 0) := (others => '0');
-signal unpredicted_PC_E: std_logic_vector(31 downto 0) := (others => '0');
+signal Rdst_val: std_logic_vector(31 downto 0);
+signal PC_flags_mem: std_logic_vector(31 downto 0);
+signal unpredicted_PC_E: std_logic_vector(31 downto 0);
 signal load_ret_PC: std_logic := '0';
 signal wrong_prediction_bit: std_logic := '0';
 signal PC_load: std_logic := '0';
-signal PC: std_logic_vector(31 downto 0) := (others => '0');
+signal PC: std_logic_vector(31 downto 0);
 signal opcode_FD: STD_LOGIC_VECTOR (4 DOWNTO 0) := (others => '0');
 signal opcode_DE: STD_LOGIC_VECTOR (4 DOWNTO 0) := (others => '0');
 signal opcode_EM: STD_LOGIC_VECTOR (4 DOWNTO 0) := (others => '0');
@@ -46,7 +46,7 @@ signal IR: std_logic_vector(31 downto 0) := (others => '0');
 
 -- signals for memory 
 signal pc_flags : std_logic_vector(31 downto 0) := (others => '0');
-signal RAM_INS_ADDR: std_logic_vector(10 downto 0) := (others => '0');
+signal RAM_INS_ADDR: std_logic_vector(10 downto 0);
 signal RAM_INS_WR: std_logic := '0';
 signal RAM_INS_IN: std_logic_vector(15 downto 0) := (others => '0');
 signal RAM_INS_OUT: std_logic_vector(15 downto 0 ) := (others => '0');
@@ -132,7 +132,7 @@ signal ex_src1_value_in: std_logic_vector(31 downto 0) := (others => '0');
 --mem_wb register out signals
  signal mem_wb_cs_out : std_logic_vector(3 downto 0) := (others => '0');
  signal mem_opcode_out : std_logic_vector(4 downto 0) := (others => '0');
- signal mem_result_out : std_logic_vector(31 downto 0) := (others => '0');
+ signal mem_result_out : std_logic_vector(31 downto 0);
  signal mem_exe_out : std_logic_vector(31 downto 0) := (others => '0');
  signal mem_src_val_out : std_logic_vector(31 downto 0) := (others => '0');
  signal mem_src1_code_out : std_logic_vector(2 downto 0) := (others => '0');
@@ -145,7 +145,7 @@ signal ex_src1_value_in: std_logic_vector(31 downto 0) := (others => '0');
 -- wb out signals
 signal wb_val_out : std_logic_vector(31 downto 0) := (others=>'0');
 signal wb_addr_out : std_logic_vector(2 downto 0) := (others=>'0');
-signal wb_mem_out : std_logic_vector(31 downto 0) := (others=>'0');
+signal wb_mem_out : std_logic_vector(31 downto 0);
 signal wb_en_out : std_logic := '0';
 --WB outputs needed by excute
 signal WB_src1_val_out :  std_logic_vector(31 downto 0) := (others => '0');

@@ -9,7 +9,7 @@ entity reg is
 end reg;
 
 architecture arch of reg is
-  signal qq : std_logic_vector(n-1 DOWNTO 0) := (others => '0');
+  signal qq : std_logic_vector(n-1 DOWNTO 0);
   begin
     q <= qq;
     process(clk, rst)

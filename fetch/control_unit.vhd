@@ -17,7 +17,7 @@ architecture arch of control_unit is
           ex_cs <= "000";
           mem_cs <= "0000000";
           wb_cs <= "0000";
-        elsif rising_edge(clk) then
+        elsif falling_edge(clk) then
             -- ex
             -- io/alu
             case opcode is

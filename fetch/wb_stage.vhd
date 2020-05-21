@@ -26,21 +26,17 @@ architecture arch of wb is
       signal val_sel, addr_sel : std_logic_vector(1 downto 0);
   begin
     mem_out <= mem;
+    
     swap: swap_handler port map(opcode, swap_flag, wb_cs, clk, reset, val_sel, addr_sel);
-    process(clk)
-    begin
-        if(rising_edge(clk)) then
-        case val_sel is
-            when "01" => val_out <= mem; wb_en <= '1';
-            when "10" => val_out <= exe; wb_en <= '1';
-            when "11" => val_out <= Rsrc1_val; wb_en <= '1';
-            when others => val_out <= (others => 'Z'); wb_en <= '0';
-        end case;
-        case addr_sel is
-            when "01" => addr_out <= Rsrc1_code;
-            when "10" => addr_out <= Rsrc2_code;
-            when others => addr_out <= Rdst_code;
-        end case;
-        end if;
-    end process;
+    
+    val_out <= mem when val_sel = "01" else
+            exe when val_sel = "10" else
+            Rsrc1_val when val_sel = "11" else
+            (others => 'Z');
+    
+    wb_en <= '1' when val_sel = "01" or val_sel = "10" or val_sel = "11" else '0';
+    
+    addr_out <= Rdst_code when addr_sel = "01" else
+            Rsrc2_code when addr_sel = "10" else
+            Rsrc1_code;
   end architecture;

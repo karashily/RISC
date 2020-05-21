@@ -14,7 +14,7 @@ PORT(
 END regi;
 
 ARCHITECTURE arch OF regi IS
-signal qq : std_logic_vector(Nbits-1 DOWNTO 0) := (others => '0');
+signal qq : std_logic_vector(Nbits-1 DOWNTO 0);
 BEGIN
     q <= qq;
     process(clk, clr)

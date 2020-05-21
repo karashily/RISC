@@ -66,7 +66,7 @@ architecture arch of regfile is
         q6 when src2 = "110" else
         q7;
 
-    process(write_en)
+    process(write_en, write_reg)
       begin
         if write_en = '1' then
             case write_reg is

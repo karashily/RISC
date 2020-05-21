@@ -21,7 +21,7 @@ type RAM_ARRAY is array (0 to 2047 ) of std_logic_vector (15 downto 0);
 signal RAM: RAM_ARRAY :=(4 => "0101000000000000",
                          0 => "0000000000000011",
                          5 => "0101000100000000",
-                          others =>"0000000000000000"); 
+                          others =>"0100000000000000"); 
 signal read_data_1,read_data_2,read_ins : std_logic_vector(15 downto 0);
 
 begin
@@ -43,7 +43,7 @@ end process;
 read_data_2 <= RAM(to_integer(unsigned(RAM_DATA_ADDR))) when RAM_DATA_ADDR /= "UUUUUUUUUUU" else (others => 'Z');
 read_data_1 <= RAM(to_integer(unsigned(RAM_DATA_ADDR)) - 1) when RAM_DATA_ADDR /= "UUUUUUUUUUU" else (others => 'Z');
 
-read_ins <=RAM(to_integer(unsigned(RAM_INS_ADDR))) when RAM_INS_ADDR /= "UUUUUUUUUUU" else (others => '0');
+read_ins <=RAM(to_integer(unsigned(RAM_INS_ADDR))) when RAM_INS_ADDR /= "UUUUUUUUUUU" else "0100000000000000";
 
 RAM_INS_OUT<=read_ins;
 RAM_DATA_OUT<=read_data_2 & read_data_1;
