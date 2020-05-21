@@ -36,7 +36,10 @@ architecture arch of dec is
             mem_cs: out std_logic_vector(6 downto 0);
             wb_cs: out std_logic_vector(3 downto 0));
       end component;
+
+    signal clk_bar : std_logic:='0';
 begin
+    clk_bar <= not clk;
     regs: regfile port map(src1 => ir(26 downto 24),
         src2 => ir(23 downto 21),
         write_reg => wb_addr,

@@ -66,9 +66,9 @@ architecture arch of regfile is
         q6 when src2 = "110" else
         q7;
 
-    process(clk, rst)
+    process(write_en)
       begin
-        if rising_edge(clk) and write_en = '1' then
+        if write_en = '1' then
             case write_reg is
                 when "000" =>
                     load0 <= '1';
