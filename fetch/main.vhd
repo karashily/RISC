@@ -162,6 +162,25 @@ signal ALU_output_selector: std_logic := '0';
 signal IO_output_selector:std_logic := '0';
 signal ForwardUnit_src1_sel,ForwardUnit_src2_sel:std_logic_vector(1 downto 0) := (others => '0');
 signal src1_sel,src2_sel:std_logic := '0';
+
+component forward_unit is
+  port(clk, rst: std_logic;
+        --mem signals
+        mem_Rsrc1_val, mem_mem_out, mem_exe_out: in std_logic_vector(31 downto 0);
+        mem_Rsrc1_code, mem_Rsrc2_code, mem_Rdst_code: in std_logic_vector(2 downto 0);
+        mem_wb_cs: in std_logic_vector(3 downto 0);
+        mem_swap_flag: in std_logic;
+        mem_opcode: in std_logic_vector(4 downto 0);
+        
+        --wb signals
+        wb_Rsrc1_val, wb_mem_out, wb_exe_out: in std_logic_vector(31 downto 0);
+        wb_Rsrc1_code, wb_Rsrc2_code, wb_Rdst_code: in std_logic_vector(2 downto 0);
+        wb_wb_cs: in std_logic_vector(3 downto 0);
+        wb_swap_flag: in std_logic;
+        wb_opcode: in std_logic_vector(4 downto 0)
+        );
+end component;
+
 component fetch is
     port(
         A: in STD_LOGIC_VECTOR (15 DOWNTO 0);
@@ -561,5 +580,21 @@ write_back: wb port map (opcode => mem_opcode_out, swap_flag => mem_swap_flag_ou
       Rdst_code => mem_dst_code_out, Rsrc1_code => mem_src1_code_out, Rsrc2_code => mem_src2_code_out,
       wb_en => wb_en_out, val_out => wb_val_out, addr_out => wb_addr_out, mem_out => wb_mem_out);
 
-	
+forwarding_unit: forward_unit port map(clk => clk, rst => reset,
+              --mem signals
+              mem_Rsrc1_val=>ex_src1_value_out, mem_mem_out=>mem_out, mem_exe_out=>ex_output_out,
+              mem_Rsrc1_code=>ex_src1_code_out, mem_Rsrc2_code=>ex_src2_code_out, mem_Rdst_code=>ex_dst_code_out,
+              mem_wb_cs=>ex_wb_cs_out,
+              mem_swap_flag=>ex_swap_flag_out,
+              mem_opcode=>ex_opcode_out,
+              
+              --wb signals
+              wb_Rsrc1_val=>mem_src_val_out, wb_mem_out=>mem_result_out, wb_exe_out=>mem_exe_out,
+              wb_Rsrc1_code=>mem_src1_code_out, wb_Rsrc2_code=>mem_src2_code_out, wb_Rdst_code=>mem_dst_code_out,
+              wb_wb_cs=> mem_wb_cs_out,
+              wb_swap_flag=> mem_swap_flag_out,
+              wb_opcode=> mem_opcode_out
+              );
+
+
 END main_arch;
