@@ -134,12 +134,12 @@ def get_machine_code(inst):
         mc += get_imm_bin(nums[0])
     elif(len(regs) == 3 and len(nums) == 0):
         # two operand and dst
+        mc += get_regcode(regs[0])
         mc += get_regcode(regs[1])
         mc += get_regcode(regs[2])
-        mc += get_regcode(regs[0])
     else:
         raise Exception("FATAL: Operand types unsupported: {} regs and {} nums.".format(len(regs), len(nums)))
-    if(len(mc) < 16):
+    if(len(mc) <= 16):
         mc += '0'*(16-len(mc))
     else:
         mc += '0'*(32-len(mc))
