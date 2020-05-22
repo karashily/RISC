@@ -165,6 +165,7 @@ signal src1_sel,src2_sel:std_logic := '0';
 
 component forward_unit is
   port(clk, rst: std_logic;
+        src1_exec_code,src2_exec_code:in std_logic_vector(2 downto 0);
         --mem signals
         mem_Rsrc1_val, mem_mem_out, mem_exe_out: in std_logic_vector(31 downto 0);
         mem_Rsrc1_code, mem_Rsrc2_code, mem_Rdst_code: in std_logic_vector(2 downto 0);
@@ -177,7 +178,10 @@ component forward_unit is
         wb_Rsrc1_code, wb_Rsrc2_code, wb_Rdst_code: in std_logic_vector(2 downto 0);
         wb_wb_cs: in std_logic_vector(3 downto 0);
         wb_swap_flag: in std_logic;
-        wb_opcode: in std_logic_vector(4 downto 0)
+        wb_opcode: in std_logic_vector(4 downto 0);
+        --out
+        src1_SEL,src2_SEL:OUT std_logic_vector(1 downto 0);
+        src1_mem_value,src2_mem_value,src1_wb_value,src2_wb_value:OUT std_logic_vector(31 downto 0)
         );
 end component;
 
@@ -581,6 +585,8 @@ write_back: wb port map (opcode => mem_opcode_out, swap_flag => mem_swap_flag_ou
       wb_en => wb_en_out, val_out => wb_val_out, addr_out => wb_addr_out, mem_out => wb_mem_out);
 
 forwarding_unit: forward_unit port map(clk => clk, rst => reset,
+              src1_exec_code=>idex_src1_code_out,
+               src2_exec_code=>idex_src2_code_out,
               --mem signals
               mem_Rsrc1_val=>ex_src1_value_out, mem_mem_out=>mem_out, mem_exe_out=>ex_output_out,
               mem_Rsrc1_code=>ex_src1_code_out, mem_Rsrc2_code=>ex_src2_code_out, mem_Rdst_code=>ex_dst_code_out,
@@ -593,7 +599,10 @@ forwarding_unit: forward_unit port map(clk => clk, rst => reset,
               wb_Rsrc1_code=>mem_src1_code_out, wb_Rsrc2_code=>mem_src2_code_out, wb_Rdst_code=>mem_dst_code_out,
               wb_wb_cs=> mem_wb_cs_out,
               wb_swap_flag=> mem_swap_flag_out,
-              wb_opcode=> mem_opcode_out
+              wb_opcode=> mem_opcode_out,
+              --out
+              src1_SEL=>ForwardUnit_src1_sel,src2_SEL=>ForwardUnit_src2_sel,
+              src1_mem_value=>mem_src1_val_out,src2_mem_value=>mem_src2_val_out,src1_wb_value=>WB_src1_val_out,src2_wb_value=>WB_src2_val_out
               );
 
 
