@@ -268,7 +268,7 @@ PORT(
 END component;
 
 component dec is
-  port( clk, write_en, rst_in, intr_in : in std_logic;
+  port( clk, cs_flush, write_en, rst_in, intr_in : in std_logic;
       rst_out, intr_out: out std_logic;
       ir: in std_logic_vector(31 downto 0);
       PC_in: in std_logic_vector(31 downto 0);
@@ -460,7 +460,7 @@ BEGIN
   FD_intr_out <= FDRegout(97);
 
 
-  decode_stage: dec port map(clk, wb_en_out, FD_rst_out, FD_intr_out, dec_rst_out, dec_intr_out, FD_IR_out, FD_PC_out, FD_Unpred_PC_out, wb_val_out, wb_addr_out,
+  decode_stage: dec port map(clk, control_unit_mux, wb_en_out, FD_rst_out, FD_intr_out, dec_rst_out, dec_intr_out, FD_IR_out, FD_PC_out, FD_Unpred_PC_out, wb_val_out, wb_addr_out,
     dec_src1_code, dec_src2_code, dec_dst_code, dec_Rsrc1_val, dec_Rsrc2_val, dec_extended_imm, dec_ea, 
     dec_ex_cs, dec_mem_cs, dec_wb_cs, dec_PC_out, dec_unpred_PC_out, dec_opcode);
 

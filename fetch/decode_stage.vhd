@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity dec is
-  port( clk, write_en, rst_in, intr_in : in std_logic;
+  port( clk, cs_flush, write_en, rst_in, intr_in : in std_logic;
       rst_out, intr_out: out std_logic;
       ir: in std_logic_vector(31 downto 0);
       PC_in: in std_logic_vector(31 downto 0);
@@ -38,6 +38,11 @@ architecture arch of dec is
       end component;
 
     signal clk_bar : std_logic:='0';
+
+    signal cu_ex_cs: std_logic_vector(2 downto 0);
+    signal cu_mem_cs: std_logic_vector(6 downto 0);
+    signal cu_wb_cs: std_logic_vector(3 downto 0);
+
 begin
     clk_bar <= not clk;
     regs: regfile port map(src1 => ir(26 downto 24),
@@ -53,14 +58,18 @@ begin
     cu: control_unit port map(opcode => ir(31 downto 27),
         clk => clk,
         rst => rst_in,
-        ex_cs => ex_cs,
-        mem_cs => mem_cs, 
-        wb_cs => wb_cs);
+        ex_cs => cu_ex_cs,
+        mem_cs => cu_mem_cs, 
+        wb_cs => cu_wb_cs);
 
     PC_out <= PC_in;
     unpred_pc_out <= unpred_pc_in;
     rst_out <= rst_in;
     intr_out <= intr_in;
+
+    ex_cs <= cu_ex_cs when cs_flush = '0' else (others=>'0');
+    mem_cs <= cu_mem_cs when cs_flush = '0' else (others=>'0');
+    wb_cs <= cu_wb_cs when cs_flush = '0' else (others=>'0');
 
     process(clk)
     begin
@@ -72,6 +81,7 @@ begin
             extended_imm (15 downto 0) <= ir(15 downto 0);
             extended_imm (31 downto 16) <= (others => ir(15));
             ea <= ir(19 downto 0);
+            
         end if;
     end process;
 end architecture;
