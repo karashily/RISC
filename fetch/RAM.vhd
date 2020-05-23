@@ -18,9 +18,21 @@ end RAM;
 
 architecture Behavioral of RAM is
 type RAM_ARRAY is array (0 to 2047 ) of std_logic_vector (15 downto 0);
-signal RAM: RAM_ARRAY :=(4 => "0101000000000000",
+signal RAM: RAM_ARRAY :=(
                          0 => "0000000000000011",
-                         5 => "0101000100000000",
+                         4 => "0101000000000000", -- inc r0
+                         5 => "0101000100000000", -- inc r1
+                         6 => "0101001000000000", -- inc r2
+                         7 => "0101001100000000", -- inc r3
+                         8 => "0101100000000000", -- dec r0
+                         9 => "0101000100000000", -- inc r1
+                         10 => "0101001000000000", -- inc r2
+                         11 => "0101001100000000", -- inc r3
+                         12 => "0101010000000000", -- inc r4
+                         13 => "0101000100000000", -- inc r1
+                         14 => "1100000000000000", -- jz 
+
+
                           others =>"0100000000000000"); 
 signal read_data_1,read_data_2,read_ins : std_logic_vector(15 downto 0);
 

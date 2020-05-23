@@ -14,8 +14,8 @@ END main;
 
 ARCHITECTURE main_arch OF main IS
 signal instruction : std_logic_vector(15 downto 0);
-signal prediction_bit : std_logic := '0';
-signal Rdst_val: std_logic_vector(31 downto 0);
+signal prediction_bit : std_logic;
+signal Rdst_val: std_logic_vector(31 downto 0):= (others => '1');
 signal PC_flags_mem: std_logic_vector(31 downto 0);
 signal unpredicted_PC_E: std_logic_vector(31 downto 0);
 signal load_ret_PC: std_logic := '0';

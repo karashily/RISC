@@ -24,7 +24,7 @@ architecture fetch_arch of fetch is
     signal PC_unpredicted : std_logic_vector(31 downto 0);
     signal PC : std_logic_vector(31 downto 0);
     signal PC_mem : std_logic_vector(31 downto 0);
-    signal prediction_bit : std_logic := '0';
+    signal prediction_bit : std_logic := '1';
     signal PC_reg_in : std_logic_vector(31 downto 0);
     constant PC_start : std_logic_vector(31 downto 0) := "01000000000000000000000000000000"; -- location of nop
     
