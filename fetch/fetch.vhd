@@ -15,7 +15,8 @@ entity fetch is
         PC_load: in std_logic;
 
         prediction_bit_out: out std_logic;
-        PC_to_fetch: out std_logic_vector(31 downto 0)
+        PC_to_fetch: out std_logic_vector(31 downto 0);
+        PC_unpredicted_out: out std_logic_vector(31 downto 0)
       );
   end fetch;
 
@@ -65,6 +66,8 @@ begin
     -- PC_reg_in <= PC_predicted when reset = '0' else PC_start;
     PC_reg_in <= PC_predicted;
     PC_reg : regi generic map (32) port map (PC_reg_in,PC_load,'0',clk,PC);
+    -- PC_unpred_reg : regi generic map (32) port map (PC_unpredicted,PC_load,'0',clk,PC_unpredicted_out);
+    PC_unpredicted_out <= PC_unpredicted;
     prediction_bit_out <= prediction_bit;
     PC_to_fetch <= PC;
     

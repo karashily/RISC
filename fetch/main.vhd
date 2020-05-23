@@ -41,6 +41,9 @@ signal INT_EM: STD_LOGIC := '0';
 signal RESET_EM: STD_LOGIC := '0';
 signal control_unit_mux: STD_LOGIC := '0';
 signal fetch_stall: STD_LOGIC := '0';
+signal reg_code: std_logic_vector(2 downto 0);
+signal PC_unpredicted: std_logic_vector(31 downto 0);
+
 
 
 signal IR: std_logic_vector(31 downto 0) := (others => '0');
@@ -201,7 +204,9 @@ component fetch is
         PC_load: in std_logic;
 
         prediction_bit_out: out std_logic;
-        PC_to_fetch: out std_logic_vector(31 downto 0)
+        PC_to_fetch: out std_logic_vector(31 downto 0);
+        PC_unpredicted_out: out std_logic_vector(31 downto 0)
+
       );
 end component;
 
@@ -439,11 +444,23 @@ component wb is
       mem_out: out std_logic_vector(31 downto 0));
 end component;
 
+component mimic_forward is
+  port(regcode : in std_logic_vector(2 downto 0);
+      reg : out std_logic_vector(31 downto 0));
+end component;
+
 BEGIN
   PC_flags_mem <= wb_mem_out;
   reset_em <= ex_reset_mem_out;
   int_em <= ex_intr_mem_out;
-  fetch_component: fetch port map (instruction,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,prediction_bit,PC);
+  reg_code <= instruction(10 downto 8);
+  -- to be updated by omar's unit
+  mimicFetch: mimic_forward port map(reg_code,Rdst_val);
+  fetch_component: fetch port map (instruction,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,prediction_bit,PC,unpred_pc);
+  -- inputs for hazard detection unit
+  opcode_DE <= idex_opcode_out;
+  unpredicted_PC_E <= idex_unpred_pc_out;
+  --
   hazard_unit: hazard_detection_unit port map (instruction,
                                                clk,
                                                reset,

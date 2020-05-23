@@ -72,6 +72,13 @@ architecture hazard_detection_unit_arch of hazard_detection_unit is
         );
     END  component;
 
+    component wrong_prediction_unit is
+        port(opcode_DE : in std_logic_vector(4 downto 0);
+              prediction_bit : in std_logic;
+              ZF : in std_logic;
+            q: out std_logic);
+    end component;
+
     component register1 IS PORT(
     d   : IN STD_LOGIC;
     ld  : IN STD_LOGIC; -- load/enable.
@@ -106,6 +113,8 @@ begin
     -- load_ret_PC <= stall_bit_5;
 
     fetch_stall <= stall_bit_2;
+
+    wrong_prediction_hazard : wrong_prediction_unit port map (opcode_DE,prediction_bit,ZF,stall_bit_4);
     process(clk,stall_bit_5)
         begin
             if rising_edge(clk) then 
