@@ -13,7 +13,8 @@ entity fetch is
         load_ret_PC: in std_logic;
         wrong_prediction_bit: in std_logic;
         PC_load: in std_logic;
-
+        opcode_E: in std_logic_vector(4 downto 0);
+        ZF: in std_logic;
         prediction_bit_out: out std_logic;
         PC_to_fetch: out std_logic_vector(31 downto 0);
         PC_unpredicted_out: out std_logic_vector(31 downto 0)
@@ -28,7 +29,10 @@ architecture fetch_arch of fetch is
     signal prediction_bit : std_logic := '1';
     signal PC_reg_in : std_logic_vector(31 downto 0);
     constant PC_start : std_logic_vector(31 downto 0) := "01000000000000000000000000000000"; -- location of nop
-    
+    signal prediction_correct : std_logic;
+    signal prediction_load : std_logic;
+    constant jz_opcode : std_logic_vector(4 downto 0) := "11000";
+
     component PC_predictor is
         port(
           A: in STD_LOGIC_VECTOR (15 DOWNTO 0);
@@ -59,6 +63,12 @@ architecture fetch_arch of fetch is
         );
     END component;
 
+    component prediction_state_machine is    
+    port (
+        input,clk,load,rst:in std_logic;
+        output:out std_logic);
+    end component ;
+
 begin
     PC_mem(19 downto 0) <= PC_flags_mem(19 downto 0);
     PC_mem(31 downto 20) <= (others => '0');
@@ -68,6 +78,9 @@ begin
     PC_reg : regi generic map (32) port map (PC_reg_in,PC_load,'0',clk,PC);
     -- PC_unpred_reg : regi generic map (32) port map (PC_unpredicted,PC_load,'0',clk,PC_unpredicted_out);
     PC_unpredicted_out <= PC_unpredicted;
+    prediction_correct <= not wrong_prediction_bit;
+    prediction_load <= '1' when opcode_E = jz_opcode else '0';
+    prediction_state_machine_map: prediction_state_machine port map (ZF,clk,prediction_load,reset,prediction_bit);
     prediction_bit_out <= prediction_bit;
     PC_to_fetch <= PC;
     

@@ -202,7 +202,8 @@ component fetch is
         load_ret_PC: in std_logic;
         wrong_prediction_bit: in std_logic;
         PC_load: in std_logic;
-
+        opcode_E: in std_logic_vector(4 downto 0);
+        ZF: in std_logic;
         prediction_bit_out: out std_logic;
         PC_to_fetch: out std_logic_vector(31 downto 0);
         PC_unpredicted_out: out std_logic_vector(31 downto 0)
@@ -456,7 +457,7 @@ BEGIN
   reg_code <= instruction(10 downto 8);
   -- to be updated by omar's unit
   mimicFetch: mimic_forward port map(reg_code,Rdst_val);
-  fetch_component: fetch port map (instruction,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,prediction_bit,PC,unpred_pc);
+  fetch_component: fetch port map (instruction,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,opcode_DE,ZF,prediction_bit,PC,unpred_pc);
   -- inputs for hazard detection unit
   opcode_DE <= idex_opcode_out;
   unpredicted_PC_E <= idex_unpred_pc_out;

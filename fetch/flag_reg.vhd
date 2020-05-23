@@ -14,7 +14,7 @@ architecture flag_arch of flag_Register is
           Q <= "1111";
         elsif (RST='1') then  
           Q <= "0000"; 
-        elsif (falling_edge(c))then
+        elsif (rising_edge(c))then
             Q <= D;   
         end if;  
     end process;  
