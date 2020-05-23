@@ -84,7 +84,7 @@ EnableFlagReg<='1' when((S="0000"
  or S="0101" 
 or S="0110")
  and flag_en ='1' );
-Z<= '1' when F="0000000000000000" else '0';
+Z<= '1' when F="00000000000000000000000000000000" else '0';
 Nflg<= '1' when F(n-1) = '1' else '0';
 flagReg_in<=  Z & Nflg & Cout & '0';
 flagReg_out<= flagReg_in when (EnableFlagReg ='1') else
