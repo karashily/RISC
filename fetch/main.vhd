@@ -7,8 +7,10 @@ ENTITY main IS
 GENERIC (n : integer := 32);
 PORT(
     clk: in std_logic;
+    IO_IN:IN std_logic_vector (n-1 downto 0);
     reset: in std_logic;
-    int: in std_logic
+    int: in std_logic;
+    IO_OUT:OUT std_logic_vector (n-1 downto 0)
 );
 END main;
 
@@ -156,8 +158,7 @@ signal mem_src2_val_out :  std_logic_vector(31 downto 0) := (others => '0');
 
 
 --excute signals
-signal IO_IN: std_logic_vector(n-1 downto 0) := (others => '0');
-signal IO_OUT:  std_logic_vector(n-1 downto 0) := (others => '0');
+
 signal ALU_output_selector: std_logic := '0';
 signal IO_output_selector:std_logic := '0';
 signal ForwardUnit_src1_sel,ForwardUnit_src2_sel:std_logic_vector(1 downto 0) := (others => '0');
