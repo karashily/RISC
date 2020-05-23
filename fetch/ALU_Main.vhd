@@ -66,8 +66,7 @@ f<= fout when S= "0000"  or S="0001" or S="1010"or S="1011"
 	else  B when (S="1000" or S="0111")
 	else (others =>'0') ;
 Cout<=carry_artihmetic_out when( S="0000"
-or S="1010" 
-or S="1011" )
+or S="1010" )
    else(not carry_artihmetic_out) when  S="0001"  
  else A(n - to_integer(unsigned(B))-1) when S="0101" 
  else A(to_integer(unsigned(B))-1) when S="0110"
