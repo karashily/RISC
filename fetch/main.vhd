@@ -456,7 +456,7 @@ BEGIN
   int_em <= ex_intr_mem_out;
   reg_code <= instruction(10 downto 8);
   -- to be updated by omar's unit
-  mimicFetch: mimic_forward port map(reg_code,Rdst_val);
+  mimicForward: mimic_forward port map(reg_code,Rdst_val);
   fetch_component: fetch port map (instruction,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,opcode_DE,ZF,prediction_bit,PC,unpred_pc);
   -- inputs for hazard detection unit
   opcode_DE <= idex_opcode_out;
