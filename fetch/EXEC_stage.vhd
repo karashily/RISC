@@ -19,7 +19,8 @@ GENERIC (n : integer := 32);
 	     flag_reg_out:OUT std_logic_vector(3 downto 0);
 		 ALU_OUTPUT: INOUT  std_logic_vector(n-1 downto 0);
 		 swap_flag:OUT std_logic;
-		 Rsrc1_value:OUT std_logic_vector(n-1 downto 0)
+		 Rsrc1_value:OUT std_logic_vector(n-1 downto 0);
+		 jz_flage:OUT std_logic
 	     ); 
 END ENTITY EXEC_stage;
 
@@ -47,6 +48,7 @@ signal my_output: std_logic_vector(n-1 downto 0);
 signal falgs:std_logic_vector(3 downto 0);
 signal SWP_flag:std_logic;
 begin
+jz_flage<=flag_reg_in(3) when opcode_in="11000" else '0';
 enable_flag_reg<='1' when opcode_in="01001" or opcode_in="01010" or opcode_in="01011" or opcode_in="00000" 
 or opcode_in="00001" or opcode_in="00010" or opcode_in="00011" or opcode_in="00100" or opcode_in="00101" or opcode_in="00110";
 

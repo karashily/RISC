@@ -163,7 +163,9 @@ signal ALU_output_selector: std_logic := '0';
 signal IO_output_selector:std_logic := '0';
 signal ForwardUnit_src1_sel,ForwardUnit_src2_sel:std_logic_vector(1 downto 0) := (others => '0');
 signal src1_sel,src2_sel:std_logic := '0';
-
+-------------------------------------------------------------
+signal JZ_signal:std_logic;
+----------------------------------------------------------
 component forward_unit is
   port(clk, rst: std_logic;
         src1_exec_code,src2_exec_code:in std_logic_vector(2 downto 0);
@@ -220,7 +222,8 @@ GENERIC (n : integer := 32);
 	     flag_reg_out:OUT std_logic_vector(3 downto 0);
 		 ALU_OUTPUT: INOUT  std_logic_vector(n-1 downto 0);
 		 swap_flag:OUT std_logic;
-		 Rsrc1_value:OUT std_logic_vector(n-1 downto 0)
+     Rsrc1_value:OUT std_logic_vector(n-1 downto 0);
+     jz_flage:OUT std_logic
 	     ); 
 END component;
 
@@ -503,12 +506,12 @@ BEGIN
 
   flag_reg: flag_Register port map( clk,'0',reset,flag_reg_out,flag_reg_in) ;
   
-  ZF<=flag_reg_out(0);
+  ZF<=flag_reg_out(3);
   
   execution_stage: EXEC_stage generic map (32) port map(clk,idex_src1_val_out,idex_src2_val_out,
   idex_extended_imm_out,mem_src1_val_out,mem_src2_val_out,WB_src1_val_out,WB_src2_val_out,
   idex_opcode_out,IO_IN,IO_OUT,idex_ex_cs_out(0),idex_ex_cs_out(1),
-  idex_ex_cs_out(2),ForwardUnit_src1_sel,ForwardUnit_src2_sel,reset,flag_reg_in,flag_reg_out,ex_mem_output_in,ex_swap_flag_in,ex_src1_value_in);
+  idex_ex_cs_out(2),ForwardUnit_src1_sel,ForwardUnit_src2_sel,reset,flag_reg_in,flag_reg_out,ex_mem_output_in,ex_swap_flag_in,ex_src1_value_in,JZ_signal);
 
 
 
