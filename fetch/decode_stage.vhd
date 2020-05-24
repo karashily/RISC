@@ -17,7 +17,9 @@ entity dec is
       wb_cs: out std_logic_vector(3 downto 0);
       PC_out: out std_logic_vector(31 downto 0);
       unpred_PC_out: out std_logic_vector(31 downto 0);
-      opcode: out std_logic_vector(4 downto 0));
+      opcode: out std_logic_vector(4 downto 0);
+      branch_regcode: in std_logic_vector(2 downto 0);
+      branch_val: out std_logic_vector(31 downto 0));
 end dec;
  
 architecture arch of dec is
@@ -26,7 +28,9 @@ architecture arch of dec is
             write_val: in std_logic_vector(31 downto 0);
             write_en: in std_logic;
             rst, clk: in std_logic;
-            src1_val, src2_val: out std_logic_vector(31 downto 0));
+            src1_val, src2_val: out std_logic_vector(31 downto 0);
+            branch_regcode: in std_logic_vector(2 downto 0);
+            branch_val: out std_logic_vector(31 downto 0));
     end component;
 
     component control_unit is
@@ -53,7 +57,9 @@ begin
         rst => rst_in,
         clk => clk,
         src1_val => Rsrc1_val, 
-        src2_val => Rsrc2_val);
+        src2_val => Rsrc2_val,
+        branch_regcode => branch_regcode,
+        branch_val => branch_val);
 
     cu: control_unit port map(opcode => ir(31 downto 27),
         clk => clk,
