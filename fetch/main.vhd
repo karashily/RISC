@@ -455,7 +455,7 @@ component mimic_forward is
       --
       src1_SEL,src2_SEL:in std_logic_vector(1 downto 0);
       exec_src1,exec_src2: in std_logic_vector(2 downto 0);
-      src1_exec_value,src2_exec_value,src1_mem_value,src2_mem_value,src1_wb_value,src2_wb_value:IN std_logic_vector(31 downto 0)
+      src1_exec_value,src2_exec_value,src1_mem_value,src2_mem_value,src1_wb_value,src2_wb_value,reg_file_value:IN std_logic_vector(31 downto 0)
       );
 end component;
 
@@ -465,7 +465,7 @@ BEGIN
   int_em <= ex_intr_mem_out;
   reg_code <= instruction(10 downto 8);
   -- to be updated by omar's unit
-  mimicForward: mimic_forward port map(reg_code,Rdst_val,ForwardUnit_src1_sel,ForwardUnit_src2_sel,idex_src1_code_out,idex_src2_code_out,idex_src1_val_out,idex_src2_val_out,mem_src1_val_out,mem_src2_val_out,WB_src1_val_out,WB_src2_val_out);
+  mimicForward: mimic_forward port map(reg_code,Rdst_val,ForwardUnit_src1_sel,ForwardUnit_src2_sel,idex_src1_code_out,idex_src2_code_out,idex_src1_val_out,idex_src2_val_out,mem_src1_val_out,mem_src2_val_out,WB_src1_val_out,WB_src2_val_out,dec_branch_val);
   fetch_component: fetch port map (instruction,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,opcode_DE,ZF,prediction_bit,PC,unpred_pc);
   -- inputs for hazard detection unit
   opcode_DE <= idex_opcode_out;
@@ -516,7 +516,7 @@ BEGIN
 
   decode_stage: dec port map(clk, control_unit_mux, wb_en_out, FD_rst_out, FD_intr_out, dec_rst_out, dec_intr_out, FD_IR_out, FD_PC_out, FD_Unpred_PC_out, wb_val_out, wb_addr_out,
     dec_src1_code, dec_src2_code, dec_dst_code, dec_Rsrc1_val, dec_Rsrc2_val, dec_extended_imm, dec_ea, 
-    dec_ex_cs, dec_mem_cs, dec_wb_cs, dec_PC_out, dec_unpred_PC_out, dec_opcode, dec_branch_regcode, dec_branch_val);
+    dec_ex_cs, dec_mem_cs, dec_wb_cs, dec_PC_out, dec_unpred_PC_out, dec_opcode, reg_code, dec_branch_val);
 
   idex: id_ex port map(clk, dec_ex_cs, dec_mem_cs, dec_wb_cs,
     dec_opcode, dec_Rsrc1_val, dec_Rsrc2_val, 
