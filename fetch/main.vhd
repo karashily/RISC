@@ -173,6 +173,7 @@ signal JZ_signal:std_logic;
 ----------------------------------------------------------
 signal mimic_mem_reg_code:std_logic_vector (2 downto 0);
 signal mimic_wb_reg_code:std_logic_vector (2 downto 0);
+signal regCode_in_dec :std_logic;
 component forward_unit is
   port(clk, rst: std_logic;
         src1_exec_code,src2_exec_code:in std_logic_vector(2 downto 0);
@@ -458,10 +459,12 @@ component mimic_forward is
   port(regcode : in std_logic_vector(2 downto 0);
       reg : out std_logic_vector(31 downto 0);
       --
-      exec_src1,exec_src2: in std_logic_vector(2 downto 0);
+      exec_src1,exec_src2,exec_dst: in std_logic_vector(2 downto 0);
       mem_src: in std_logic_vector(2 downto 0);
       wb_src: in std_logic_vector(2 downto 0);
-      src1_exec_value,src2_exec_value,mem_value,wb_value,reg_file_value:IN std_logic_vector(31 downto 0)
+      src1_exec_value,src2_exec_value,exec_dst_value,mem_value,wb_value,reg_file_value:IN std_logic_vector(31 downto 0);
+      src1_dec,src2_dec,dst_dec:in  std_logic_vector(2 downto 0);
+      regcode_in_decode:out std_logic
       );
 end component;
 
@@ -471,7 +474,7 @@ BEGIN
   int_em <= ex_intr_mem_out;
   reg_code <= instruction(10 downto 8);
   -- to be updated by omar's unit
-  mimicForward: mimic_forward port map(reg_code,Rdst_val,idex_src1_code_out,idex_src2_code_out,mimic_mem_reg_code,mimic_wb_reg_code,idex_src1_val_out,idex_src2_val_out,mem_src1_val_out,WB_src1_val_out,dec_branch_val);
+  mimicForward: mimic_forward port map(reg_code,Rdst_val,idex_src1_code_out,idex_src2_code_out,idex_dst_code_out,mimic_mem_reg_code,mimic_wb_reg_code,idex_src1_val_out,idex_src2_val_out,ex_mem_output_in,mem_src1_val_out,WB_src1_val_out,dec_branch_val,dec_src1_code, dec_src2_code, dec_dst_code,regCode_in_dec);
   fetch_component: fetch port map (instruction,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,opcode_DE,ZF,prediction_bit,PC,unpred_pc);
   -- inputs for hazard detection unit
   opcode_DE <= idex_opcode_out;
