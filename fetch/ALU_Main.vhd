@@ -47,7 +47,7 @@ signal sigA,sigB,fout : std_logic_vector (n-1 downto 0);
 constant ONE:   UNSIGNED(n-1 downto 0) := (0 => '1', others => '0');
 begin
 nadder:  my_nadder generic map(n) port map(sigA,sigB,carry_artihmetic,fout,carry_artihmetic_out);
-sigA<= A  when S ="0000" or S ="0001" or S="1010" or S="1011"--add sub inc dec
+sigA<= A  when S ="0000" or S ="0001" or S="1010" or S="1011" or S="0010"--add sub inc dec
  else (others => '0');
 
 
@@ -66,7 +66,7 @@ f<= fout when S= "0000"  or S="0001" or S="1010"or S="1011" or S="0010"
 	else  B when (S="1000" or S="0111")
 	else (others =>'0') ;
 Cout<=carry_artihmetic_out when( S="0000"
-or S="1010" )
+or S="1010"or S="0010" )
    else(not carry_artihmetic_out) when  S="0001"  
  else A(n - to_integer(unsigned(B))-1) when S="0101" 
  else A(to_integer(unsigned(B))-1) when S="0110"
