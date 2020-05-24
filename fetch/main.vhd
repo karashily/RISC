@@ -192,8 +192,8 @@ component forward_unit is
         --out
         src1_SEL,src2_SEL:OUT std_logic_vector(1 downto 0);
         src1_mem_value,src2_mem_value,src1_wb_value,src2_wb_value:OUT std_logic_vector(31 downto 0);
-        mem_reg:std_logic_vector(2 downto 0);
-        wb_reg:std_logic_vector(2 downto 0)
+        mem_reg: out std_logic_vector(2 downto 0);
+        wb_reg: out std_logic_vector(2 downto 0)
         
         );
 end component;
@@ -640,8 +640,8 @@ forwarding_unit: forward_unit port map(clk => clk, rst => reset,
               --out
               src1_SEL=>ForwardUnit_src1_sel,src2_SEL=>ForwardUnit_src2_sel,
               src1_mem_value=>mem_src1_val_out,src2_mem_value=>mem_src2_val_out,src1_wb_value=>WB_src1_val_out,src2_wb_value=>WB_src2_val_out
-              ,mem_reg=>mimic_mem_reg_code
-              ,wb_reg=>mimic_wb_reg_code
+              ,mem_reg=>mimic_mem_reg_code,
+              wb_reg=>mimic_wb_reg_code
               );
 
 
