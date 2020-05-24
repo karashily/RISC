@@ -19,7 +19,6 @@ architecture arch of wb is
         port(opcode : in std_logic_vector(4 downto 0);
             swap_flag: in std_logic;
             wb_cs: in std_logic_vector(3 downto 0);
-            clk, rst: in std_logic;
             val_sel, addr_sel: out std_logic_vector(1 downto 0));
       end component;
 
@@ -27,7 +26,7 @@ architecture arch of wb is
   begin
     mem_out <= mem;
     
-    swap: swap_handler port map(opcode, swap_flag, wb_cs, clk, reset, val_sel, addr_sel);
+    swap: swap_handler port map(opcode, swap_flag, wb_cs, val_sel, addr_sel);
     
     val_out <= mem when val_sel = "01" else
             exe when val_sel = "10" else

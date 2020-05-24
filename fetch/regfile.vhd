@@ -26,6 +26,8 @@ architecture arch of regfile is
     signal q6 : std_logic_vector(31 downto 0);
     signal q7 : std_logic_vector(31 downto 0);
 
+    signal src1_val_temp, src2_val_temp: std_logic_vector(31 downto 0);
+
     signal load0 : std_logic;
     signal load1 : std_logic;
     signal load2 : std_logic;
@@ -47,7 +49,7 @@ architecture arch of regfile is
     reg7: reg generic map (n=>32) port map(d=>write_val, clk=>clk, rst=>rst, load=>load7, q=>q7);
 
 
-    src1_val <= q0 when src1 = "000" else
+    src1_val_temp <= q0 when src1 = "000" else
         q1 when src1 = "001" else
         q2 when src1 = "010" else
         q3 when src1 = "011" else
@@ -57,7 +59,7 @@ architecture arch of regfile is
         q7;
 
 
-    src2_val <= q0 when src2 = "000" else
+    src2_val_temp <= q0 when src2 = "000" else
         q1 when src2 = "001" else
         q2 when src2 = "010" else
         q3 when src2 = "011" else
@@ -65,6 +67,10 @@ architecture arch of regfile is
         q5 when src2 = "101" else
         q6 when src2 = "110" else
         q7;
+
+
+    src1_val <= write_val when (src1 = write_reg and write_en = '1') else src1_val_temp;
+    src2_val <= write_val when (src2 = write_reg and write_en = '1') else src2_val_temp; 
 
     process(write_en, write_reg)
       begin

@@ -36,11 +36,11 @@ end component;
 
 component swap_handler is
     port(opcode : in std_logic_vector(4 downto 0);
-        swap_flag: in std_logic;
-        wb_cs: in std_logic_vector(3 downto 0);
-        clk, rst: in std_logic;
-        val_sel, addr_sel: out std_logic_vector(1 downto 0));
+      swap_flag: in std_logic;
+      wb_cs: in std_logic_vector(3 downto 0);
+      val_sel, addr_sel: out std_logic_vector(1 downto 0));
 end component;
+
 component forwarding_unit IS
 PORT(Rsrc1_exc,Rsrc2_exc,Rdest_mem,Rdest_WB: IN std_logic_vector(2 downto 0);
 	     src1_SEL,src2_SEL:OUT std_logic_vector(1 downto 0)
@@ -65,10 +65,10 @@ begin
         src2_mem_value<=mem_val_out;
         src1_wb_value<=wb_val_out;
         src2_wb_value<=wb_val_out;
+        
     mem_swap_handler: swap_handler port map(opcode => mem_opcode,
             swap_flag => mem_swap_flag,
             wb_cs => mem_wb_cs,
-            clk =>clk, rst => rst,
             val_sel => mem_handled_wb_cs(1 downto 0), addr_sel => mem_handled_wb_cs(3 downto 2));
     
 
@@ -83,7 +83,6 @@ begin
     wb_swap_handler: swap_handler port map(opcode => wb_opcode,
                 swap_flag => wb_swap_flag,
                 wb_cs => wb_wb_cs,
-                clk =>clk, rst => rst,
                 val_sel => wb_handled_wb_cs(1 downto 0), addr_sel => wb_handled_wb_cs(3 downto 2));
         
     
@@ -93,6 +92,7 @@ begin
                 val_out => wb_val_out,
                 reg_out => wb_reg_out,
                 en_out => wb_en_out);
+
     forwarding_logic:forwarding_unit port map (
         src1_exec_code,src2_exec_code,mem_reg_out,wb_reg_out,
         src1_SEL,src2_SEL
