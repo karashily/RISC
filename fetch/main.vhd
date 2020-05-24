@@ -16,8 +16,8 @@ END main;
 
 ARCHITECTURE main_arch OF main IS
 signal instruction : std_logic_vector(15 downto 0);
-signal prediction_bit : std_logic := '0';
-signal Rdst_val: std_logic_vector(31 downto 0);
+signal prediction_bit : std_logic;
+signal Rdst_val: std_logic_vector(31 downto 0):= (others => '1');
 signal PC_flags_mem: std_logic_vector(31 downto 0);
 signal unpredicted_PC_E: std_logic_vector(31 downto 0);
 signal load_ret_PC: std_logic := '0';
@@ -41,6 +41,9 @@ signal INT_EM: STD_LOGIC := '0';
 signal RESET_EM: STD_LOGIC := '0';
 signal control_unit_mux: STD_LOGIC := '0';
 signal fetch_stall: STD_LOGIC := '0';
+signal reg_code: std_logic_vector(2 downto 0);
+signal PC_unpredicted: std_logic_vector(31 downto 0);
+
 
 
 signal IR: std_logic_vector(31 downto 0) := (others => '0');
@@ -163,7 +166,9 @@ signal ALU_output_selector: std_logic := '0';
 signal IO_output_selector:std_logic := '0';
 signal ForwardUnit_src1_sel,ForwardUnit_src2_sel:std_logic_vector(1 downto 0) := (others => '0');
 signal src1_sel,src2_sel:std_logic := '0';
-
+-------------------------------------------------------------
+signal JZ_signal:std_logic;
+----------------------------------------------------------
 component forward_unit is
   port(clk, rst: std_logic;
         src1_exec_code,src2_exec_code:in std_logic_vector(2 downto 0);
@@ -197,9 +202,12 @@ component fetch is
         load_ret_PC: in std_logic;
         wrong_prediction_bit: in std_logic;
         PC_load: in std_logic;
-
+        opcode_E: in std_logic_vector(4 downto 0);
+        ZF: in std_logic;
         prediction_bit_out: out std_logic;
-        PC_to_fetch: out std_logic_vector(31 downto 0)
+        PC_to_fetch: out std_logic_vector(31 downto 0);
+        PC_unpredicted_out: out std_logic_vector(31 downto 0)
+
       );
 end component;
 
@@ -220,7 +228,8 @@ GENERIC (n : integer := 32);
 	     flag_reg_out:OUT std_logic_vector(3 downto 0);
 		 ALU_OUTPUT: INOUT  std_logic_vector(n-1 downto 0);
 		 swap_flag:OUT std_logic;
-		 Rsrc1_value:OUT std_logic_vector(n-1 downto 0)
+     Rsrc1_value:OUT std_logic_vector(n-1 downto 0);
+     jz_flage:OUT std_logic
 	     ); 
 END component;
 
@@ -436,11 +445,28 @@ component wb is
       mem_out: out std_logic_vector(31 downto 0));
 end component;
 
+component mimic_forward is
+  port(regcode : in std_logic_vector(2 downto 0);
+      reg : out std_logic_vector(31 downto 0);
+      --
+      src1_SEL,src2_SEL:in std_logic_vector(1 downto 0);
+      exec_src1,exec_src2: in std_logic_vector(2 downto 0);
+      src1_exec_value,src2_exec_value,src1_mem_value,src2_mem_value,src1_wb_value,src2_wb_value:IN std_logic_vector(31 downto 0)
+      );
+end component;
+
 BEGIN
   PC_flags_mem <= wb_mem_out;
   reset_em <= ex_reset_mem_out;
   int_em <= ex_intr_mem_out;
-  fetch_component: fetch port map (instruction,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,prediction_bit,PC);
+  reg_code <= instruction(10 downto 8);
+  -- to be updated by omar's unit
+  mimicForward: mimic_forward port map(reg_code,Rdst_val,ForwardUnit_src1_sel,ForwardUnit_src2_sel,idex_src1_code_out,idex_src2_code_out,idex_src1_val_out,idex_src2_val_out,mem_src1_val_out,mem_src2_val_out,WB_src1_val_out,WB_src2_val_out);
+  fetch_component: fetch port map (instruction,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,opcode_DE,ZF,prediction_bit,PC,unpred_pc);
+  -- inputs for hazard detection unit
+  opcode_DE <= idex_opcode_out;
+  unpredicted_PC_E <= idex_unpred_pc_out;
+  --
   hazard_unit: hazard_detection_unit port map (instruction,
                                                clk,
                                                reset,
@@ -503,12 +529,12 @@ BEGIN
 
   flag_reg: flag_Register port map( clk,'0',reset,flag_reg_out,flag_reg_in) ;
   
-  ZF<=flag_reg_out(0);
+  ZF<=flag_reg_out(3);
   
   execution_stage: EXEC_stage generic map (32) port map(clk,idex_src1_val_out,idex_src2_val_out,
   idex_extended_imm_out,mem_src1_val_out,mem_src2_val_out,WB_src1_val_out,WB_src2_val_out,
   idex_opcode_out,IO_IN,IO_OUT,idex_ex_cs_out(0),idex_ex_cs_out(1),
-  idex_ex_cs_out(2),ForwardUnit_src1_sel,ForwardUnit_src2_sel,reset,flag_reg_in,flag_reg_out,ex_mem_output_in,ex_swap_flag_in,ex_src1_value_in);
+  idex_ex_cs_out(2),ForwardUnit_src1_sel,ForwardUnit_src2_sel,reset,flag_reg_in,flag_reg_out,ex_mem_output_in,ex_swap_flag_in,ex_src1_value_in,JZ_signal);
 
 
 

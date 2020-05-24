@@ -47,7 +47,7 @@ signal sigA,sigB,fout : std_logic_vector (n-1 downto 0);
 constant ONE:   UNSIGNED(n-1 downto 0) := (0 => '1', others => '0');
 begin
 nadder:  my_nadder generic map(n) port map(sigA,sigB,carry_artihmetic,fout,carry_artihmetic_out);
-sigA<= A  when S ="0000" or S ="0001" or S="1010" or S="1011"--add sub inc dec
+sigA<= A  when S ="0000" or S ="0001" or S="1010" or S="1011" or S="0010"--add sub inc dec
  else (others => '0');
 
 
@@ -56,8 +56,8 @@ sigB<= B  when (S="0000" or S="0010") --add
 	   else (others => '1') when S = "1011" --dec
 	   else (others => '0');
 
-carry_artihmetic<= '0' when S="0000" or S="0001"  or S="1011" else '1';
-f<= fout when S= "0000"  or S="0001" or S="1010"or S="1011" 
+carry_artihmetic<= '0' when S="0000" or S="0001"  or S="1011" or S="0010" else '1';
+f<= fout when S= "0000"  or S="0001" or S="1010"or S="1011" or S="0010"
         else STD_LOGIC_VECTOR(shift_right(signed(A),to_integer(unsigned(B)))) when S="0110"
         else (A AND B) when S="0011" 
 	else (A OR B) when S="0100" 
@@ -66,8 +66,7 @@ f<= fout when S= "0000"  or S="0001" or S="1010"or S="1011"
 	else  B when (S="1000" or S="0111")
 	else (others =>'0') ;
 Cout<=carry_artihmetic_out when( S="0000"
-or S="1010" 
-or S="1011" )
+or S="1010"or S="0010" )
    else(not carry_artihmetic_out) when  S="0001"  
  else A(n - to_integer(unsigned(B))-1) when S="0101" 
  else A(to_integer(unsigned(B))-1) when S="0110"
@@ -84,7 +83,7 @@ EnableFlagReg<='1' when((S="0000"
  or S="0101" 
 or S="0110")
  and flag_en ='1' );
-Z<= '1' when F="0000000000000000" else '0';
+Z<= '1' when F="00000000000000000000000000000000" else '0';
 Nflg<= '1' when F(n-1) = '1' else '0';
 flagReg_in<=  Z & Nflg & Cout & '0';
 flagReg_out<= flagReg_in when (EnableFlagReg ='1') else

@@ -29,7 +29,7 @@ architecture PC_predictor_arch of PC_predictor is
     constant call_opcode : std_logic_vector(4 downto 0) := "11010";
 
 begin
-    opcode <= A(4 downto 0);
+    opcode <= A(15 downto 11);
 
     PC_predicted <= Rdst_val when (wrong_prediction_bit = '0' and load_ret_PC = '0') and (( (opcode = jz_opcode) and (prediction_bit = '1') ) or  (opcode = jmp_opcode) or  (opcode = call_opcode))
     else std_logic_vector( unsigned(PC) + 1 ) when (wrong_prediction_bit = '0' and load_ret_PC = '0')
