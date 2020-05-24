@@ -499,7 +499,7 @@ BEGIN
   instruction <= RAM_INS_OUT;
 
   RAM_INS_ADDR <= PC(10 downto 0);
-  IR <= (RAM_INS_OUT & zeros) when fetch_stall = '0' else (FDRegOut(47 downto 32) & RAM_INS_OUT) when fetch_stall = '1';
+  IR <= (RAM_INS_OUT & zeros) when fetch_stall = '0' else (FDRegOut(63 downto 48) & RAM_INS_OUT) when fetch_stall = '1';
   FDRegIn <= int & reset & unpred_pc & IR & PC;
   FDReg: regi generic map (98) port map (FDRegIn, '1','0',clk,FDRegOut);
   
