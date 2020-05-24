@@ -19,7 +19,12 @@ entity forward_unit is
         wb_opcode: in std_logic_vector(4 downto 0);
         --output
         src1_SEL,src2_SEL:OUT std_logic_vector(1 downto 0);
-        src1_mem_value,src2_mem_value,src1_wb_value,src2_wb_value:OUT std_logic_vector(31 downto 0)
+        src1_mem_value,src2_mem_value,src1_wb_value,src2_wb_value:OUT std_logic_vector(31 downto 0);
+        --mimic unit outputs
+        mem_reg:out std_logic_vector(2 downto 0);
+        wb_reg:out std_logic_vector(2 downto 0)
+       
+        
         );
 end forward_unit;
  
@@ -68,7 +73,8 @@ begin
         src2_mem_value<=mem_val_out;
         src1_wb_value<=wb_val_out;
         src2_wb_value<=wb_val_out;
-
+        mem_reg<=mem_reg_out;
+        wb_reg<=wb_reg_out;
         enable_logic_mem<=mem_wb_cs(3) or mem_wb_cs(2) or mem_wb_cs(1) or mem_wb_cs(0) ;
         enable_logic_wb<=wb_wb_cs(3)or wb_wb_cs(2) or wb_wb_cs(1) or wb_wb_cs(0);
 

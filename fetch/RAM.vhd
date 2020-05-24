@@ -20,8 +20,8 @@ architecture Behavioral of RAM is
 type RAM_ARRAY is array (0 to 2047 ) of std_logic_vector (15 downto 0);
 signal RAM: RAM_ARRAY :=(
                          0 => "0000000000000011",
-                         4 => "0001000000011000", -- iadd r0,r6,6
-                         5 => "0000000000000110", -- imm val
+                         4 => "0010100000000000", -- shl r0,2
+                         5 => "0000000000000010", -- imm val
                          6 => "0101000000000000", -- inc r0
                          7 => "0101000000000000", -- inc r0
                          8 => "0101000100000000", -- inc r1
