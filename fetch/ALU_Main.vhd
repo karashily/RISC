@@ -56,7 +56,7 @@ sigB<= B  when (S="0000" or S="0010") --add
 	   else (others => '1') when S = "1011" --dec
 	   else (others => '0');
 
-carry_artihmetic<= '0' when S="0000" or S="0001"  or S="1011" else '1';
+carry_artihmetic<= '0' when S="0000" or S="0001"  or S="1011" or S="0010" else '1';
 f<= fout when S= "0000"  or S="0001" or S="1010"or S="1011" or S="0010"
         else STD_LOGIC_VECTOR(shift_right(signed(A),to_integer(unsigned(B)))) when S="0110"
         else (A AND B) when S="0011" 
