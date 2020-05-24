@@ -81,6 +81,8 @@ signal dec_PC_out: std_logic_vector(31 downto 0) := (others => '0');
 signal dec_unpred_PC_out: std_logic_vector(31 downto 0) := (others => '0');
 signal dec_opcode: std_logic_vector(4 downto 0) := (others => '0');
 signal dec_rst_out, dec_intr_out: std_logic := '0';
+signal dec_branch_regcode: std_logic_vector(2 downto 0);
+signal dec_branch_val: std_logic_vector(31 downto 0);
 
 -- id_ex signals
 signal idex_ex_cs_out : std_logic_vector(2 downto 0) := (others => '0');
@@ -316,7 +318,9 @@ component dec is
       wb_cs: out std_logic_vector(3 downto 0);
       PC_out: out std_logic_vector(31 downto 0);
       unpred_PC_out: out std_logic_vector(31 downto 0);
-      opcode: out std_logic_vector(4 downto 0));
+      opcode: out std_logic_vector(4 downto 0);
+      branch_regcode: in std_logic_vector(2 downto 0);
+      branch_val: out std_logic_vector(31 downto 0));
 end component;
 
 component id_ex is
@@ -512,7 +516,7 @@ BEGIN
 
   decode_stage: dec port map(clk, control_unit_mux, wb_en_out, FD_rst_out, FD_intr_out, dec_rst_out, dec_intr_out, FD_IR_out, FD_PC_out, FD_Unpred_PC_out, wb_val_out, wb_addr_out,
     dec_src1_code, dec_src2_code, dec_dst_code, dec_Rsrc1_val, dec_Rsrc2_val, dec_extended_imm, dec_ea, 
-    dec_ex_cs, dec_mem_cs, dec_wb_cs, dec_PC_out, dec_unpred_PC_out, dec_opcode);
+    dec_ex_cs, dec_mem_cs, dec_wb_cs, dec_PC_out, dec_unpred_PC_out, dec_opcode, dec_branch_regcode, dec_branch_val);
 
   idex: id_ex port map(clk, dec_ex_cs, dec_mem_cs, dec_wb_cs,
     dec_opcode, dec_Rsrc1_val, dec_Rsrc2_val, 

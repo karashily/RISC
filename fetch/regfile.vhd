@@ -6,7 +6,9 @@ entity regfile is
       write_val: in std_logic_vector(31 downto 0);
       write_en: in std_logic;
       rst, clk: in std_logic;
-      src1_val, src2_val: out std_logic_vector(31 downto 0));
+      src1_val, src2_val: out std_logic_vector(31 downto 0);
+      branch_regcode: in std_logic_vector(2 downto 0);
+      branch_val: out std_logic_vector(31 downto 0));
 end regfile;
 
 architecture arch of regfile is
@@ -67,7 +69,15 @@ architecture arch of regfile is
         q5 when src2 = "101" else
         q6 when src2 = "110" else
         q7;
-
+        
+    branch_val <= q0 when branch_regcode = "000" else
+        q1 when branch_regcode = "001" else
+        q2 when branch_regcode = "010" else
+        q3 when branch_regcode = "011" else
+        q4 when branch_regcode = "100" else
+        q5 when branch_regcode = "101" else
+        q6 when branch_regcode = "110" else
+        q7;
 
     src1_val <= write_val when (src1 = write_reg and write_en = '1') else src1_val_temp;
     src2_val <= write_val when (src2 = write_reg and write_en = '1') else src2_val_temp; 
