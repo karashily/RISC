@@ -59,7 +59,7 @@ else Rsrc1_WB when Rsrc1_sel_forward="10";
 Rsrc1_value<=src1;
 src2_1stMux<=Rsrc2 when Rsrc2_sel='0' else imm when Rsrc2_sel='1';
 
-src2<=src2_1stMux when Rsrc2_sel_forward="00" or Rsrc2_sel='1'
+src2<=src2_1stMux when Rsrc2_sel_forward="00" or Rsrc2_sel='1' 
 else Rsrc2_mem when Rsrc2_sel_forward="01"
 else Rsrc2_WB when Rsrc2_sel_forward="10";
 

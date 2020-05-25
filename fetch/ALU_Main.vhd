@@ -69,7 +69,7 @@ Cout<=carry_artihmetic_out when( S="0000"
 or S="1010"or S="0010" )
    else(not carry_artihmetic_out) when  S="0001"  
  else A(n - to_integer(unsigned(B))-1) when S="0101" 
- else A(to_integer(unsigned(B))-1) when S="0110"
+ else A(to_integer(unsigned(B))-1) when S="0110" and B/="00000000000000000000000000000000"
    else '0'; 	
 --flage register
 EnableFlagReg<='1' when((S="0000"
