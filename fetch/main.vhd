@@ -269,6 +269,7 @@ component hazard_detection_unit is
       INT: in STD_LOGIC;
       INT_EM: in STD_LOGIC;
       RESET_EM: in STD_LOGIC;
+      regCode_in_dec: in STD_LOGIC;
       
       -- outputs
       wrong_prediction_bit: out STD_LOGIC;
@@ -479,6 +480,9 @@ BEGIN
   -- inputs for hazard detection unit
   opcode_DE <= idex_opcode_out;
   unpredicted_PC_E <= idex_unpred_pc_out;
+  opcode_EM <= ex_opcode_out;
+  opcode_FD <= FD_pc_out(4 downto 0);
+  opcode_MW <= mem_opcode_out;
   --
   hazard_unit: hazard_detection_unit port map (instruction,
                                                clk,
@@ -500,6 +504,7 @@ BEGIN
                                                INT,
                                                INT_EM,
                                                RESET_EM,
+                                               regCode_in_dec,
                                                wrong_prediction_bit,
                                                load_ret_PC,
                                                PC_load,

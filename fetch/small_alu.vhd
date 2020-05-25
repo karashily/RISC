@@ -13,11 +13,11 @@ architecture arch of small_alu is
   
   signal result:std_logic_vector(n-1 downto 0);
   begin
-    process(clk, control,rst)
+    process(clk,control,rst)
       begin
         if(rst ='1') then
           result <= d;
-        elsif(rising_edge(clk)) then
+        else
           if (control = '1')then
             result <= std_logic_vector( unsigned(d) - 2 );
           else 

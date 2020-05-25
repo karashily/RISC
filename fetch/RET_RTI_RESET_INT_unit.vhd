@@ -37,7 +37,7 @@ component register1 IS PORT(
 END component;
 
 BEGIN
-    opcode <= A(4 downto 0);
+    opcode <= A(15 downto 11);
     start_stall <= '1' when
         opcode = RET_opcode or
         opcode = RTI_opcode or

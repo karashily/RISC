@@ -22,9 +22,13 @@ end component;
 signal temp1, temp2: STD_LOGIC_VECTOR (N-1 downto 0) := (others => '0');
  
 begin
-m1: mux2_1  generic map (N   => N) port map(A,B,S0,temp1);
-m2: mux2_1  generic map (N   => N) port map(C,D,S0,temp2);
-m3: mux2_1  generic map (N   => N) port map(temp1,temp2,S1,Z);
+-- m1: mux2_1  generic map (N   => N) port map(A,B,S0,temp1);
+-- m2: mux2_1  generic map (N   => N) port map(C,D,S0,temp2);
+-- m3: mux2_1  generic map (N   => N) port map(temp1,temp2,S1,Z);
+Z <= A when (S0 = '0' and S1 = '0') else
+     B when (S0 = '1' and S1 = '0') else
+     C when (S0 = '0' and S1 = '1') else
+     D;
  
 end Behavioral;
 
