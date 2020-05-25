@@ -20,7 +20,8 @@ GENERIC (n : integer := 32);
 		 ALU_OUTPUT: INOUT  std_logic_vector(n-1 downto 0);
 		 swap_flag:OUT std_logic;
 		 Rsrc1_value:OUT std_logic_vector(n-1 downto 0);
-		 jz_flage:OUT std_logic
+		 jz_flage:OUT std_logic;
+		 intr:in std_logic
 	     ); 
 END ENTITY EXEC_stage;
 
@@ -33,7 +34,8 @@ GENERIC (n : integer := 32);
 	     Rst,flag_en:IN std_logic;
 	     F: INOUT  std_logic_vector(n-1 downto 0);
 		 flagReg_out: INOUT std_logic_vector(3 downto 0);
-		 swap_flag:OUT std_logic); 
+		 swap_flag:OUT std_logic;
+		 inter_sig:in std_logic); 
 END component ALU;
 
 component flag_Register is  
@@ -63,7 +65,7 @@ src2<=src2_1stMux when Rsrc2_sel_forward="00" or Rsrc2_sel='1'
 else Rsrc2_mem when Rsrc2_sel_forward="01"
 else Rsrc2_WB when Rsrc2_sel_forward="10";
 
-my_alu:  ALU generic map(n) port map(src1,src2,opcode_in(3 downto 0),Rst,enable_flag_reg,my_output,falgs,SWP_flag);
+my_alu:  ALU generic map(n) port map(src1,src2,opcode_in(3 downto 0),Rst,enable_flag_reg,my_output,falgs,SWP_flag,intr);
 my_falg_reg: flag_Register port map(clk,preset_flags,Rst,falgs,flag_reg_out);
 
 ALU_OUTPUT<= IO_IN when IO_ALU_SEL='1' else my_output when IO_ALU_SEL='0';
