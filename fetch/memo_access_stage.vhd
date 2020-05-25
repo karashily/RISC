@@ -87,6 +87,8 @@ architecture arch of memo_stage is
   
   --Value mux signals 
   signal val_out_s :std_logic_vector(31 downto 0);
+  signal temp_pc:std_logic_vector(31 downto 0);
+  signal temp_pc_flags:std_logic_vector(31 downto 0);
   
    --Address mux signals 
   signal add_out_s :std_logic_vector(10 downto 0);
@@ -102,7 +104,11 @@ architecture arch of memo_stage is
       rd_wr_sel=>  rd_wr_sel_s,sp_load=>  sp_load_s,sp_alu=> sp_alu_s,
       val_sel => val_sel_s, add_sel=> add_sel_s);
       
-     mux_val:mux4_1 generic map(N=> 32) port map (A  =>(others=>'Z') ,B  => Rsrc ,C  => pc,D => pc_flags,
+     temp_pc_reg:reg generic map(32) port map(d => pc ,clk => clk,rst =>rst , load => '1', q =>temp_pc );
+      
+     temp_pc_flags_reg:reg generic map(32) port map(d =>pc_flags ,clk => clk,rst =>rst , load => '1', q =>temp_pc_flags );
+      
+     mux_val:mux4_1 generic map(N=> 32) port map (A  =>(others=>'Z') ,B  => Rsrc ,C  => temp_pc,D => temp_pc_flags,
       S0  => val_sel_s(0),S1 => val_sel_s(1), Z => val_out_s );
       
      mux_add:mux4_1 generic map(N=> 11) port map (A  =>"00000000001" ,B  => "00000000011",C  => EA,D => sp_mux_out_s,
