@@ -9,7 +9,7 @@ ENTITY  RET_RTI_RESET_INT_unit IS PORT(
     INT: in std_logic;
     INT_EM: in std_logic;
     RESET: in std_logic;
-    RESET_EM: in std_logic;
+    RESET_DE: in std_logic;
     clk: in std_logic;
 
     output: out std_logic
@@ -18,9 +18,6 @@ END  RET_RTI_RESET_INT_unit;
 
 ARCHITECTURE  RET_RTI_RESET_INT_arch OF  RET_RTI_RESET_INT_unit IS
 signal opcode : std_logic_vector(4 downto 0);
-
-constant RET_opcode: std_logic_vector(4 downto 0) := "11011";
-constant RTI_opcode: std_logic_vector(4 downto 0) := "11100";
 
 signal start_stall: std_logic := '0';
 signal end_stall: std_logic := '0';
@@ -49,7 +46,7 @@ BEGIN
         opcode_DE = RET_opcode or
         opcode_DE = RTI_opcode or
         INT_EM = '1' or
-        RESET_EM = '1'
+        RESET_DE = '1'
     else '0';
 
     load_reg <= '0' when (stall_bit_5 = '1' and end_stall = '0') else '1';

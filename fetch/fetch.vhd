@@ -17,7 +17,8 @@ entity fetch is
         ZF: in std_logic;
         prediction_bit_out: out std_logic;
         PC_to_fetch: out std_logic_vector(31 downto 0);
-        PC_unpredicted_out: out std_logic_vector(31 downto 0)
+        PC_unpredicted_out: out std_logic_vector(31 downto 0);
+        PC_predict: out std_logic_vector(31 downto 0)
       );
   end fetch;
 
@@ -83,6 +84,7 @@ begin
     prediction_state_machine_map: prediction_state_machine port map (ZF,clk,prediction_load,reset,prediction_bit);
     prediction_bit_out <= prediction_bit;
     PC_to_fetch <= PC;
+    PC_predict <= PC_predicted;
     
 end fetch_arch; 
 

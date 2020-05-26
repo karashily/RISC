@@ -108,7 +108,7 @@ architecture arch of memo_stage is
       
      temp_pc_flags_reg:reg generic map(32) port map(d =>pc_flags ,clk => clk,rst =>rst , load => '1', q =>temp_pc_flags );
       
-     mux_val:mux4_1 generic map(N=> 32) port map (A  =>(others=>'Z') ,B  => Rsrc ,C  => temp_pc,D => temp_pc_flags,
+     mux_val:mux4_1 generic map(N=> 32) port map (A  =>(others=>'Z') ,B  => Rsrc ,C  => pc,D => pc_flags,
       S0  => val_sel_s(0),S1 => val_sel_s(1), Z => val_out_s );
       
      mux_add:mux4_1 generic map(N=> 11) port map (A  =>"00000000001" ,B  => "00000000011",C  => EA,D => sp_mux_out_s,

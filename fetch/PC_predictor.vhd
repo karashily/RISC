@@ -34,7 +34,7 @@ begin
     PC_predicted <= Rdst_val when (wrong_prediction_bit = '0' and load_ret_PC = '0') and (( (opcode = jz_opcode) and (prediction_bit = '1') ) or  (opcode = jmp_opcode) or  (opcode = call_opcode))
     else std_logic_vector( unsigned(PC) + 1 ) when (wrong_prediction_bit = '0' and load_ret_PC = '0')
     else unpredicted_PC_E when (wrong_prediction_bit = '1')
-    else std_logic_vector( unsigned(PC_Mem) + 1 ) when (load_ret_PC = '1');
+    else PC_Mem when (load_ret_PC = '1');
 
     PC_unpredicted <= std_logic_vector( unsigned(PC) + 1 ) when (wrong_prediction_bit = '0' and load_ret_PC = '0') and (( (opcode = jz_opcode) and (prediction_bit = '1') ) or  (opcode = jmp_opcode) or  (opcode = call_opcode))
     else Rdst_val when  (wrong_prediction_bit = '0' and load_ret_PC = '0') and ((opcode = jz_opcode) and (prediction_bit = '0'))

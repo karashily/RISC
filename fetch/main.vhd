@@ -69,6 +69,7 @@ signal FD_pc_out, FD_ir_out : std_logic_vector(31 downto 0) := (others => '0');
 signal FD_rst_out, FD_intr_out : std_logic := '0';
 signal FDRegIn:  std_logic_vector(97 downto 0) :=  (others => '0');
 signal unpred_pc : std_logic_vector(31 downto 0) := (others => '0');
+signal pred_pc : std_logic_vector(31 downto 0) := (others => '0');
 
 -- signal between decode and id_ex
 signal dec_src1_code, dec_src2_code, dec_dst_code: std_logic_vector(2 downto 0) := (others => '0');
@@ -214,7 +215,8 @@ component fetch is
         ZF: in std_logic;
         prediction_bit_out: out std_logic;
         PC_to_fetch: out std_logic_vector(31 downto 0);
-        PC_unpredicted_out: out std_logic_vector(31 downto 0)
+        PC_unpredicted_out: out std_logic_vector(31 downto 0);
+        PC_predict: out std_logic_vector(31 downto 0)
 
       );
 end component;
@@ -471,18 +473,18 @@ component mimic_forward is
 end component;
 
 BEGIN
-  PC_flags_mem <= wb_mem_out;
+  PC_flags_mem <= mem_out;
   reset_em <= ex_reset_mem_out;
   int_em <= ex_intr_mem_out;
   reg_code <= instruction(10 downto 8);
   -- to be updated by omar's unit
   mimicForward: mimic_forward port map(reg_code,Rdst_val,idex_src1_code_out,idex_src2_code_out,idex_dst_code_out,mimic_mem_reg_code,mimic_wb_reg_code,idex_src1_val_out,idex_src2_val_out,ex_mem_output_in,mem_src1_val_out,WB_src1_val_out,dec_branch_val,dec_src1_code, dec_src2_code, dec_dst_code,regCode_in_dec);
-  fetch_component: fetch port map (instruction,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,opcode_DE,ZF,prediction_bit,PC,unpred_pc);
+  fetch_component: fetch port map (instruction,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,opcode_DE,ZF,prediction_bit,PC,unpred_pc,pred_pc);
   -- inputs for hazard detection unit
   opcode_DE <= idex_opcode_out;
   unpredicted_PC_E <= idex_unpred_pc_out;
   opcode_EM <= ex_opcode_out;
-  opcode_FD <= FD_pc_out(4 downto 0);
+  opcode_FD <= FD_ir_out(31 downto 27);
   opcode_MW <= mem_opcode_out;
   --
   hazard_unit: hazard_detection_unit port map (instruction,
@@ -519,8 +521,8 @@ BEGIN
 
   RAM_INS_ADDR <= PC(10 downto 0);
   IR <= (RAM_INS_OUT & zeros) when fetch_stall = '0' else (FDRegOut(63 downto 48) & RAM_INS_OUT) when fetch_stall = '1';
-  FDRegIn <= int & reset & unpred_pc & IR & PC;
-  FDReg: regi generic map (98) port map (FDRegIn, '1','0',clk,FDRegOut);
+  FDRegIn <= int & reset & unpred_pc & IR & std_logic_vector(unsigned(PC)+1);
+  FDReg: regi generic map (98) port map (FDRegIn, PC_load,'0',clk,FDRegOut);
   
   FD_pc_out <= FDRegout(31 downto 0);
   FD_ir_out <= FDRegout(63 downto 32);
