@@ -548,14 +548,14 @@ BEGIN
     idex_reset_out, idex_intr_out);
 
 
-  flag_reg: flag_Register port map( clk,'0',reset,flag_reg_out,flag_reg_in) ;
+  flag_reg: flag_Register port map( clk,'0',idex_reset_out,flag_reg_out,flag_reg_in) ;
   
   ZF<=flag_reg_out(3);
   
   execution_stage: EXEC_stage generic map (32) port map(clk,idex_src1_val_out,idex_src2_val_out,
   idex_extended_imm_out,mem_src1_val_out,mem_src2_val_out,WB_src1_val_out,WB_src2_val_out,
   idex_opcode_out,IO_IN,IO_OUT,idex_ex_cs_out(0),idex_ex_cs_out(1),
-  idex_ex_cs_out(2),ForwardUnit_src1_sel,ForwardUnit_src2_sel,reset,flag_reg_in,flag_reg_out,ex_mem_output_in,ex_swap_flag_in,ex_src1_value_in,JZ_signal,idex_intr_out);
+  idex_ex_cs_out(2),ForwardUnit_src1_sel,ForwardUnit_src2_sel,idex_reset_out,flag_reg_in,flag_reg_out,ex_mem_output_in,ex_swap_flag_in,ex_src1_value_in,JZ_signal,idex_intr_out);
 
 
 
@@ -632,7 +632,7 @@ write_back: wb port map (opcode => mem_opcode_out, swap_flag => mem_swap_flag_ou
       Rdst_code => mem_dst_code_out, Rsrc1_code => mem_src1_code_out, Rsrc2_code => mem_src2_code_out,
       wb_en => wb_en_out, val_out => wb_val_out, addr_out => wb_addr_out, mem_out => wb_mem_out);
 
-forwarding_unit: forward_unit port map(clk => clk, rst => reset,
+forwarding_unit: forward_unit port map(clk => clk, rst => idex_reset_out,
               src1_exec_code=>idex_src1_code_out,
                src2_exec_code=>idex_src2_code_out,
               --mem signals
