@@ -55,21 +55,21 @@ component onebitreg is
 end component;
 
 begin
-    mem_cs: reg generic map(7) port map(d=>mem_cs_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>mem_cs_out);
-    wb_cs: reg generic map(4) port map(d=>wb_cs_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>wb_cs_out);
-    opcode: reg generic map(5) port map(d=>opcode_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>opcode_out);
-    flags:reg generic map(4) port map(d=>flags_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>flags_out);
-	output: reg generic map(32) port map(d=>output_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>output_out);
-	src1_code: reg generic map(3) port map(d=>src1_code_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>src1_code_out);
-    src2_code: reg generic map(3) port map(d=>src2_code_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>src2_code_out);
-    dst_code: reg generic map(3) port map(d=>dst_code_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>dst_code_out);
-    ext_imm:reg generic map(32) port map(d=>extended_imm_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>extended_imm_out);
-    ea: reg generic map(20) port map(d=>ea_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>ea_out);
+    mem_cs: reg generic map(7) port map(d=>mem_cs_in,clk=>clk,rst=>'0',load=>'1',q=>mem_cs_out);
+    wb_cs: reg generic map(4) port map(d=>wb_cs_in,clk=>clk,rst=>'0',load=>'1',q=>wb_cs_out);
+    opcode: reg generic map(5) port map(d=>opcode_in,clk=>clk,rst=>'0',load=>'1',q=>opcode_out);
+    flags:reg generic map(4) port map(d=>flags_in,clk=>clk,rst=>'0',load=>'1',q=>flags_out);
+	output: reg generic map(32) port map(d=>output_in,clk=>clk,rst=>'0',load=>'1',q=>output_out);
+	src1_code: reg generic map(3) port map(d=>src1_code_in,clk=>clk,rst=>'0',load=>'1',q=>src1_code_out);
+    src2_code: reg generic map(3) port map(d=>src2_code_in,clk=>clk,rst=>'0',load=>'1',q=>src2_code_out);
+    dst_code: reg generic map(3) port map(d=>dst_code_in,clk=>clk,rst=>'0',load=>'1',q=>dst_code_out);
+    ext_imm:reg generic map(32) port map(d=>extended_imm_in,clk=>clk,rst=>'0',load=>'1',q=>extended_imm_out);
+    ea: reg generic map(20) port map(d=>ea_in,clk=>clk,rst=>'0',load=>'1',q=>ea_out);
     reset: onebitreg port map(d=>reset_mem_in,clk=>clk,rst=>'0',load=>'1',q=>reset_mem_out);
-    intr: onebitreg port map(d=>intr_mem_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>intr_mem_out);
-	pc: reg generic map(32) port map(d=>pc_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>pc_out);
-    unpred_pc: reg generic map(32) port map(d=>unpred_pc_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>unpred_pc_out);
-    Swap_Flag:onebitreg port map(d=>swap_flag_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>swap_flag_out);
-    src1Value: reg generic map(32) port map(d=>src1_value_in,clk=>clk,rst=>reset_mem_in,load=>'1',q=>src1_value_out);
+    intr: onebitreg port map(d=>intr_mem_in,clk=>clk,rst=>'0',load=>'1',q=>intr_mem_out);
+	pc: reg generic map(32) port map(d=>pc_in,clk=>clk,rst=>'0',load=>'1',q=>pc_out);
+    unpred_pc: reg generic map(32) port map(d=>unpred_pc_in,clk=>clk,rst=>'0',load=>'1',q=>unpred_pc_out);
+    Swap_Flag:onebitreg port map(d=>swap_flag_in,clk=>clk,rst=>'0',load=>'1',q=>swap_flag_out);
+    src1Value: reg generic map(32) port map(d=>src1_value_in,clk=>clk,rst=>'0',load=>'1',q=>src1_value_out);
 end architecture;
 
