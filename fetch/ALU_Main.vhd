@@ -10,7 +10,8 @@ GENERIC (n : integer := 32);
 	     F: INOUT  std_logic_vector(n-1 downto 0);
 		 flagReg_out: INOUT std_logic_vector(3 downto 0);
 		 swap_flag:OUT std_logic;
-inter_sig:in std_logic);
+inter_sig:in std_logic;
+flush_signal:in std_logic);
 		  
 END ENTITY ALU;
 
@@ -60,17 +61,17 @@ sigB<= B  when (S="0000" or S="0010") --add
 
 carry_artihmetic<= '0' when S="0000" or S="0001"  or S="1011" or S="0010" else '1';
 f<= fout when S= "0000"  or S="0001" or S="1010"or S="1011" or S="0010"
-    else STD_LOGIC_VECTOR(shift_right(signed(A),to_integer(unsigned(B)))) when S="0110"
+    else STD_LOGIC_VECTOR(shift_right(signed(A),to_integer(unsigned(B)))) when S="0110" and flush_signal='0'
     else (A AND B) when S="0011" 
 	else (A OR B) when S="0100" 
 	else (NOT A) when S="1001"
-	else  STD_LOGIC_VECTOR(shift_left(signed(A), to_integer(unsigned(B)))) when S="0101" 
+	else  STD_LOGIC_VECTOR(shift_left(signed(A), to_integer(unsigned(B)))) when S="0101" and flush_signal='0'
 	else  B when (S="1000" or S="0111")
 	else (others =>'0') ;
 Cout<=carry_artihmetic_out when( S="0000" or S="1010" or S="0010" )
    else(not carry_artihmetic_out) when  S="0001"  
-   else A(n - to_integer(unsigned(B))-1) when S="0101" and inter_sig/='1'
-   else A(to_integer(unsigned(B))-1) when S="0110" and B/="00000000000000000000000000000000" and inter_sig/='1'
+   else A(n - to_integer(unsigned(B))-1) when S="0101" and inter_sig/='1' and flush_signal='0'
+   else A(to_integer(unsigned(B))-1) when S="0110" and B/="00000000000000000000000000000000" and inter_sig/='1' and flush_signal='0'
    else '0'; 	
 --flage register
 EnableFlagReg<='1' when((S="0000"
