@@ -105,7 +105,7 @@ signal idex_unpred_pc_out : std_logic_vector(31 downto 0) := (others => '0');
 signal idex_reset_out : std_logic := '0';
 signal idex_intr_out : std_logic := '0';
 signal idex_swap_flag_out : std_logic := '0';
-
+signal idex_csFlush_out:std_logic := '0';
 --ex_mem register input signals
 signal  ex_mem_flags_in: std_logic_vector(3 downto 0) := (others => '0');
 signal	ex_mem_output_in: std_logic_vector(31 downto 0) := (others => '0');
@@ -355,6 +355,7 @@ component id_ex is
         reset_in : in std_logic;
         intr_in : in std_logic;
         swap_flag_in: in std_logic;
+        csFlush_in:in std_logic;
         -- out
         ex_cs_out : out std_logic_vector(2 downto 0);
         mem_cs_out : out std_logic_vector(6 downto 0);
@@ -371,7 +372,8 @@ component id_ex is
         unpred_pc_out : out std_logic_vector(31 downto 0);
         reset_out : out std_logic;
         intr_out : out std_logic;
-        swap_flag_out: out std_logic
+        swap_flag_out: out std_logic;
+        csFlush_out:out std_logic
       );
 end component;
 
@@ -486,7 +488,7 @@ BEGIN
   int_em <= ex_intr_mem_out;
   reg_code <= instruction(10 downto 8);
   -- to be updated by omar's unit
-  mimicForward: mimic_forward port map(reg_code,Rdst_val,idex_src1_code_out,idex_src2_code_out,idex_dst_code_out,mimic_mem_reg_code,mimic_wb_reg_code,ex_src1_value_in,idex_src2_val_out,ex_mem_output_in,forward_mem_val_out,forward_WB_val_out,dec_branch_val,dec_src1_code, dec_src2_code, dec_dst_code,regCode_in_dec,dec_opcode,control_unit_mux,idex_opcode_out);
+  mimicForward: mimic_forward port map(reg_code,Rdst_val,idex_src1_code_out,idex_src2_code_out,idex_dst_code_out,mimic_mem_reg_code,mimic_wb_reg_code,ex_src1_value_in,idex_src2_val_out,ex_mem_output_in,forward_mem_val_out,forward_WB_val_out,dec_branch_val,dec_src1_code, dec_src2_code, dec_dst_code,regCode_in_dec,dec_opcode,idex_csFlush_out,idex_opcode_out);
   fetch_component: fetch port map (instruction,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,opcode_DE,ZF,prediction_bit,PC,unpred_pc,pred_pc);
   -- inputs for hazard detection unit
   opcode_DE <= idex_opcode_out;
@@ -546,13 +548,13 @@ BEGIN
     dec_opcode, dec_Rsrc1_val, dec_Rsrc2_val, 
     dec_src1_code, dec_src2_code, dec_dst_code,
     dec_extended_imm, dec_ea, dec_pc_out, dec_unpred_pc_out,
-    dec_rst_out, dec_intr_out, dec_swap_flag,
+    dec_rst_out, dec_intr_out, dec_swap_flag,control_unit_mux,
     idex_ex_cs_out, idex_mem_cs_out, idex_wb_cs_out,
     idex_opcode_out, idex_src1_val_out, idex_src2_val_out,
     idex_src1_code_out, idex_src2_code_out, idex_dst_code_out,
     idex_extended_imm_out, idex_ea_out,
     idex_pc_out, idex_unpred_pc_out,
-    idex_reset_out, idex_intr_out, idex_swap_flag_out);
+    idex_reset_out, idex_intr_out, idex_swap_flag_out,idex_csFlush_out);
 
 
   flag_reg: flag_Register port map( clk,'0',idex_reset_out,flag_reg_out,flag_reg_in) ;
