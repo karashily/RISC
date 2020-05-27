@@ -24,6 +24,7 @@ constant RTI_opcode: std_logic_vector(4 downto 0) := "11100";
 
 signal start_stall: std_logic := '0';
 signal end_stall: std_logic := '0';
+signal end_stall_delayed: std_logic := '0';
 signal stall_bit_5: std_logic := '0';
 signal load_reg: std_logic;
 
@@ -54,7 +55,8 @@ BEGIN
 
     load_reg <= '0' when (stall_bit_5 = '1' and end_stall = '0') else '1';
     reg : register1 port map (start_stall,load_reg,'0',clk,stall_bit_5);
-    output <= stall_bit_5;
+    reg2 : register1 port map (end_stall,load_reg,'0',clk,end_stall_delayed);
+    output <= (stall_bit_5 or start_stall) and not end_stall_delayed;
 
 
 
