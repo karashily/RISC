@@ -24,7 +24,7 @@ architecture mimic_forward_arch of mimic_forward is
     else src2_exec_value when( regcode=exec_src2 )
     else mem_value when (regcode=mem_src )
     else wb_value when (  regcode=wb_src ) 
-    else exec_dst_value when (regcode=exec_dst_value)
+    else exec_dst_value when (regcode=exec_dst)
     else exec_dst_value when(regcode=exec_src1 and (opcode_in_exec="01001" or opcode_in_exec="01010" or opcode_in_exec="01011" or opcode_in_exec="01100" or opcode_in_exec="01101"))
     else reg_file_value ;
     regcode_in_decode<='1' when (regcode=src1_dec and (opcode_in_decode="01001" or opcode_in_decode="01010" 
