@@ -4,13 +4,27 @@ use ieee.std_logic_1164.all;
 entity control_unit is
   port(opcode : in std_logic_vector(4 downto 0);
       clk, rst: in std_logic;
+      swap_flag: out std_logic;
       ex_cs: out std_logic_vector(2 downto 0);
       mem_cs: out std_logic_vector(6 downto 0);
       wb_cs: out std_logic_vector(3 downto 0));
 end control_unit;
 
 architecture arch of control_unit is
+    component register1 IS PORT(
+        d   : IN STD_LOGIC;
+        ld  : IN STD_LOGIC; -- load/enable.
+        clr : IN STD_LOGIC; -- async. clear.
+        clk : IN STD_LOGIC; -- clock.
+        q   : OUT STD_LOGIC -- output.
+    );
+    END component;
+    signal inner_swap_flag, swap_last_state: std_logic;
   begin
+    inner_swap_flag <= '1' when swap_last_state = '0' and opcode = "00111" and rst = '0' else '0';
+    swap_flag <= inner_swap_flag;
+    swap: register1 port map(inner_swap_flag, '1', rst, clk, swap_last_state);
+    
     process(clk, rst)
       begin
         if(rst ='1') then

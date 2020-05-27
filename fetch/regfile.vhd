@@ -79,8 +79,8 @@ architecture arch of regfile is
         q6 when branch_regcode = "110" else
         q7;
 
-    src1_val <= write_val when (src1 = write_reg and write_en = '1') else src1_val_temp;
-    src2_val <= write_val when (src2 = write_reg and write_en = '1') else src2_val_temp; 
+    src1_val <= write_val when (src1 = write_reg and write_en = '1' and rst = '0') else src1_val_temp;
+    src2_val <= write_val when (src2 = write_reg and write_en = '1' and rst = '0') else src2_val_temp; 
 
     process(write_en, write_reg)
       begin

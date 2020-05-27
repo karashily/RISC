@@ -19,6 +19,7 @@ entity id_ex is
         unpred_pc_in : in std_logic_vector(31 downto 0);
         reset_in : in std_logic;
         intr_in : in std_logic;
+        swap_flag_in: in std_logic;
         -- out
         ex_cs_out : out std_logic_vector(2 downto 0);
         mem_cs_out : out std_logic_vector(6 downto 0);
@@ -34,7 +35,8 @@ entity id_ex is
         pc_out : out std_logic_vector(31 downto 0);
         unpred_pc_out : out std_logic_vector(31 downto 0);
         reset_out : out std_logic;
-        intr_out : out std_logic
+        intr_out : out std_logic;
+        swap_flag_out: out std_logic
       );
 end id_ex;
 
@@ -68,5 +70,6 @@ begin
     unpred_pc: reg generic map(32) port map(d=>unpred_pc_in,clk=>clk,rst=>'0',load=>'1',q=>unpred_pc_out);
     reset: onebitreg port map(d=>reset_in,clk=>clk,rst=>'0',load=>'1',q=>reset_out);
     intr: onebitreg port map(d=>intr_in,clk=>clk,rst=>'0',load=>'1',q=>intr_out);
+    swap: onebitreg port map(d=>swap_flag_in,clk=>clk,rst=>'0',load=>'1',q=>swap_flag_out);
 end architecture;
 
