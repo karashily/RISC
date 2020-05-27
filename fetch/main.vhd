@@ -72,6 +72,7 @@ signal FDRegIn:  std_logic_vector(97 downto 0) :=  (others => '0');
 signal unpred_pc : std_logic_vector(31 downto 0) := (others => '0');
 signal pred_pc : std_logic_vector(31 downto 0) := (others => '0');
 
+
 -- signal between decode and id_ex
 signal dec_src1_code, dec_src2_code, dec_dst_code: std_logic_vector(2 downto 0) := (others => '0');
 signal dec_Rsrc1_val, dec_Rsrc2_val, dec_extended_imm: std_logic_vector(31 downto 0) := (others => '0');
@@ -85,6 +86,7 @@ signal dec_opcode: std_logic_vector(4 downto 0) := (others => '0');
 signal dec_rst_out, dec_intr_out: std_logic := '0';
 signal dec_branch_regcode: std_logic_vector(2 downto 0);
 signal dec_branch_val: std_logic_vector(31 downto 0);
+signal dec_swap_flag: std_logic;
 
 -- id_ex signals
 signal idex_ex_cs_out : std_logic_vector(2 downto 0) := (others => '0');
@@ -102,6 +104,7 @@ signal idex_pc_out : std_logic_vector(31 downto 0) := (others => '0');
 signal idex_unpred_pc_out : std_logic_vector(31 downto 0) := (others => '0');
 signal idex_reset_out : std_logic := '0';
 signal idex_intr_out : std_logic := '0';
+signal idex_swap_flag_out : std_logic := '0';
 
 --ex_mem register input signals
 signal  ex_mem_flags_in: std_logic_vector(3 downto 0) := (others => '0');
@@ -157,11 +160,9 @@ signal wb_addr_out : std_logic_vector(2 downto 0) := (others=>'0');
 signal wb_mem_out : std_logic_vector(31 downto 0);
 signal wb_en_out : std_logic := '0';
 --WB outputs needed by excute
-signal WB_src1_val_out :  std_logic_vector(31 downto 0) := (others => '0');
-signal WB_src2_val_out :  std_logic_vector(31 downto 0) := (others => '0');
+signal forward_WB_val_out :  std_logic_vector(31 downto 0) := (others => '0');
 --mem outputs needed by excute
-signal mem_src1_val_out :  std_logic_vector(31 downto 0) := (others => '0');
-signal mem_src2_val_out :  std_logic_vector(31 downto 0) := (others => '0');
+signal forward_mem_val_out :  std_logic_vector(31 downto 0) := (others => '0');
 
 
 --excute signals
@@ -192,12 +193,12 @@ component forward_unit is
         wb_wb_cs: in std_logic_vector(3 downto 0);
         wb_swap_flag: in std_logic;
         wb_opcode: in std_logic_vector(4 downto 0);
-        --out
+        --output
         src1_SEL,src2_SEL:OUT std_logic_vector(1 downto 0);
-        src1_mem_value,src2_mem_value,src1_wb_value,src2_wb_value:OUT std_logic_vector(31 downto 0);
-        mem_reg: out std_logic_vector(2 downto 0);
-        wb_reg: out std_logic_vector(2 downto 0)
-        
+        mem_value, wb_value:OUT std_logic_vector(31 downto 0);
+        --mimic unit outputs
+        mem_reg:out std_logic_vector(2 downto 0);
+        wb_reg:out std_logic_vector(2 downto 0)
         );
 end component;
 
@@ -314,7 +315,7 @@ PORT(
 END component;
 
 component dec is
-  port( clk, cs_flush, write_en, rst_in, intr_in : in std_logic;
+  port( clk, cs_flush, write_en, rst_in, reset_mem, intr_in : in std_logic;
       rst_out, intr_out: out std_logic;
       ir: in std_logic_vector(31 downto 0);
       PC_in: in std_logic_vector(31 downto 0);
@@ -331,7 +332,8 @@ component dec is
       unpred_PC_out: out std_logic_vector(31 downto 0);
       opcode: out std_logic_vector(4 downto 0);
       branch_regcode: in std_logic_vector(2 downto 0);
-      branch_val: out std_logic_vector(31 downto 0));
+      branch_val: out std_logic_vector(31 downto 0);
+      swap_flag: out std_logic);
 end component;
 
 component id_ex is
@@ -352,6 +354,7 @@ component id_ex is
         unpred_pc_in : in std_logic_vector(31 downto 0);
         reset_in : in std_logic;
         intr_in : in std_logic;
+        swap_flag_in: in std_logic;
         -- out
         ex_cs_out : out std_logic_vector(2 downto 0);
         mem_cs_out : out std_logic_vector(6 downto 0);
@@ -367,7 +370,8 @@ component id_ex is
         pc_out : out std_logic_vector(31 downto 0);
         unpred_pc_out : out std_logic_vector(31 downto 0);
         reset_out : out std_logic;
-        intr_out : out std_logic
+        intr_out : out std_logic;
+        swap_flag_out: out std_logic
       );
 end component;
 
@@ -479,7 +483,7 @@ BEGIN
   int_em <= ex_intr_mem_out;
   reg_code <= instruction(10 downto 8);
   -- to be updated by omar's unit
-  mimicForward: mimic_forward port map(reg_code,Rdst_val,idex_src1_code_out,idex_src2_code_out,idex_dst_code_out,mimic_mem_reg_code,mimic_wb_reg_code,idex_src1_val_out,idex_src2_val_out,ex_mem_output_in,mem_src1_val_out,WB_src1_val_out,dec_branch_val,dec_src1_code, dec_src2_code, dec_dst_code,regCode_in_dec);
+  mimicForward: mimic_forward port map(reg_code,Rdst_val,idex_src1_code_out,idex_src2_code_out,idex_dst_code_out,mimic_mem_reg_code,mimic_wb_reg_code,idex_src1_val_out,idex_src2_val_out,ex_mem_output_in,forward_mem_val_out,WB_val_out,dec_branch_val,dec_src1_code, dec_src2_code, dec_dst_code,regCode_in_dec);
   fetch_component: fetch port map (instruction,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,opcode_DE,ZF,prediction_bit,PC,unpred_pc,pred_pc);
   -- inputs for hazard detection unit
   opcode_DE <= idex_opcode_out;
@@ -531,22 +535,21 @@ BEGIN
   FD_rst_out <= FDRegout(96);
   FD_intr_out <= FDRegout(97);
 
-
-  decode_stage: dec port map(clk, control_unit_mux, wb_en_out, FD_rst_out, FD_intr_out, dec_rst_out, dec_intr_out, FD_IR_out, FD_PC_out, FD_Unpred_PC_out, wb_val_out, wb_addr_out,
+  decode_stage: dec port map(clk, control_unit_mux, wb_en_out, FD_rst_out, ex_reset_mem_out, FD_intr_out, dec_rst_out, dec_intr_out, FD_IR_out, FD_PC_out, FD_Unpred_PC_out, wb_val_out, wb_addr_out,
     dec_src1_code, dec_src2_code, dec_dst_code, dec_Rsrc1_val, dec_Rsrc2_val, dec_extended_imm, dec_ea, 
-    dec_ex_cs, dec_mem_cs, dec_wb_cs, dec_PC_out, dec_unpred_PC_out, dec_opcode, reg_code, dec_branch_val);
+    dec_ex_cs, dec_mem_cs, dec_wb_cs, dec_PC_out, dec_unpred_PC_out, dec_opcode, reg_code, dec_branch_val, dec_swap_flag);
 
   idex: id_ex port map(clk, dec_ex_cs, dec_mem_cs, dec_wb_cs,
     dec_opcode, dec_Rsrc1_val, dec_Rsrc2_val, 
     dec_src1_code, dec_src2_code, dec_dst_code,
     dec_extended_imm, dec_ea, dec_pc_out, dec_unpred_pc_out,
-    dec_rst_out, dec_intr_out,
+    dec_rst_out, dec_intr_out, dec_swap_flag,
     idex_ex_cs_out, idex_mem_cs_out, idex_wb_cs_out,
     idex_opcode_out, idex_src1_val_out, idex_src2_val_out,
     idex_src1_code_out, idex_src2_code_out, idex_dst_code_out,
     idex_extended_imm_out, idex_ea_out,
     idex_pc_out, idex_unpred_pc_out,
-    idex_reset_out, idex_intr_out);
+    idex_reset_out, idex_intr_out, idex_swap_flag_out);
 
 
   flag_reg: flag_Register port map( clk,'0',idex_reset_out,flag_reg_out,flag_reg_in) ;
@@ -554,7 +557,7 @@ BEGIN
   ZF<=flag_reg_out(3);
   
   execution_stage: EXEC_stage generic map (32) port map(clk,idex_src1_val_out,idex_src2_val_out,
-  idex_extended_imm_out,mem_src1_val_out,mem_src2_val_out,WB_src1_val_out,WB_src2_val_out,
+  idex_extended_imm_out,forward_mem_val_out,forward_mem_val_out,forward_WB_val_out,forward_WB_val_out,
   idex_opcode_out,IO_IN,IO_OUT,idex_ex_cs_out(1),idex_ex_cs_out(0),
   idex_ex_cs_out(2),ForwardUnit_src1_sel,ForwardUnit_src2_sel,reset,flag_reg_in,flag_reg_out,ex_mem_output_in,ex_swap_flag_in,ex_src1_value_in,JZ_signal,idex_intr_out);
 
@@ -574,7 +577,7 @@ EX_MEM_REG:ex_mem port map (clk,
                             idex_reset_out,
                             idex_pc_out,
                             idex_unpred_pc_out,
-                            ex_swap_flag_in,
+                            idex_swap_flag_out,
                             ex_src1_value_in,
                             ex_mem_cs_out,
                             ex_wb_cs_out,
@@ -650,8 +653,8 @@ forwarding_unit: forward_unit port map(clk => clk, rst => idex_reset_out,
               wb_opcode=> mem_opcode_out,
               --out
               src1_SEL=>ForwardUnit_src1_sel,src2_SEL=>ForwardUnit_src2_sel,
-              src1_mem_value=>mem_src1_val_out,src2_mem_value=>mem_src2_val_out,src1_wb_value=>WB_src1_val_out,src2_wb_value=>WB_src2_val_out
-              ,mem_reg=>mimic_mem_reg_code,
+              mem_value=>forward_mem_val_out,wb_value=>forward_WB_val_out,
+              mem_reg=>mimic_mem_reg_code,
               wb_reg=>mimic_wb_reg_code
               );
 
