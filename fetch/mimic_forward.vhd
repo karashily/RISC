@@ -33,8 +33,8 @@ architecture mimic_forward_arch of mimic_forward is
   signal exec_changing: std_logic_vector(1 downto 0);
   begin
     exec: reg_code_changing port map(opcode_in_exec,exec_src1,exec_src2,exec_dst,csFlush,is_execute_changing,exec_changing);
-    reg <= src1_exec_value when ((exec_changing = "00") and (exec_src1 = regcode) and (is_execute_changing = '1')) else
-           src2_exec_value when ((exec_changing = "11") and (exec_src2 = regcode) and (is_execute_changing = '1')) else
+    reg <= exec_dst_value when ((exec_changing = "00") and (exec_src1 = regcode) and (is_execute_changing = '1')) else
+            exec_dst_value when ((exec_changing = "11") and (exec_src2 = regcode) and (is_execute_changing = '1')) else
            exec_dst_value when ((exec_changing = "01") and (exec_dst = regcode) and (is_execute_changing = '1')) else
            mem_value when (regcode=mem_src) else
            wb_value when (regcode=wb_src) else
