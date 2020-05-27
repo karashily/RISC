@@ -43,6 +43,7 @@ signal control_unit_mux: STD_LOGIC := '0';
 signal fetch_stall: STD_LOGIC := '0';
 signal reg_code: std_logic_vector(2 downto 0);
 signal PC_unpredicted: std_logic_vector(31 downto 0);
+signal load_FD:std_logic := '0';
 
 
 
@@ -520,11 +521,11 @@ BEGIN
 
  
   instruction <= RAM_INS_OUT;
-
+  -- load_FD <= not control_unit_mux;
   RAM_INS_ADDR <= PC(10 downto 0);
   IR <= (RAM_INS_OUT & zeros) when fetch_stall = '0' else (FDRegOut(63 downto 48) & RAM_INS_OUT) when fetch_stall = '1';
   FDRegIn <= int & reset & unpred_pc & IR & std_logic_vector(unsigned(PC)+1);
-  FDReg: regi generic map (98) port map (FDRegIn, PC_load,'0',clk,FDRegOut);
+  FDReg: regi generic map (98) port map (FDRegIn, '1','0',clk,FDRegOut);
   
   FD_pc_out <= FDRegout(31 downto 0);
   FD_ir_out <= FDRegout(63 downto 32);

@@ -50,6 +50,8 @@ architecture hazard_detection_unit_arch of hazard_detection_unit is
     signal stall_bit_5_delayed: std_logic := '0';
     signal stall_bit_5_delayed_delayed: std_logic := '0';
     signal stall_bit_6: std_logic := '0';
+    signal stall_bit_6_delayed: std_logic := '0';
+    signal stall_bit_6_delayed_delayed: std_logic := '0';
     signal stall_bit_7: std_logic := '0';
     signal stall_bit_8: std_logic := '0';
     signal stall_bit_8_bef: std_logic := '0';
@@ -93,6 +95,15 @@ architecture hazard_detection_unit_arch of hazard_detection_unit is
         );
     END  component;
 
+    component  swap_unit IS PORT(
+        A: in std_logic_vector(15 downto 0);
+        opcode_FD: in std_logic_vector(4 downto 0);
+        clk: in std_logic;
+
+        output: out std_logic
+        );
+    END component;
+
     component register1 IS PORT(
     d   : IN STD_LOGIC;
     ld  : IN STD_LOGIC; -- load/enable.
@@ -117,7 +128,7 @@ begin
                         stall_bit_3 or 
                         stall_bit_4 or 
                         stall_bit_5_delayed_delayed or 
-                        stall_bit_6 or 
+                        stall_bit_6_delayed_delayed or 
                         stall_bit_7 or
                         stall_bit_8
                         ;
@@ -136,6 +147,12 @@ begin
     fetch_stall <= stall_bit_2;
 
     wrong_prediction_hazard : wrong_prediction_unit port map (opcode_DE,prediction_bit,ZF,stall_bit_4);
+    swap_hazard: swap_unit port map (A,opcode_FD,clk,stall_bit_6);
+    swap_reg: register1 port map (stall_bit_6,'1','0',clk,stall_bit_6_delayed);
+    swap_reg_2: register1 port map (stall_bit_6_delayed,'1','0',clk,stall_bit_6_delayed_delayed);
+
+
+
     process(clk,stall_bit_5)
         begin
             if rising_edge(clk) then 
