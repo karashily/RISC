@@ -30,8 +30,7 @@ END ENTITY EXEC_stage;
 ARCHITECTURE EXEC_arch OF EXEC_stage IS
 component ALU IS
 GENERIC (n : integer := 32);
-	PORT(clk:in std_logic;
-		A,B: IN std_logic_vector(n-1 downto 0);
+	PORT(A,B: IN std_logic_vector(n-1 downto 0);
 	     S: IN std_logic_vector(3 downto 0);
 	     Rst,flag_en:IN std_logic;
 	     F: INOUT  std_logic_vector(n-1 downto 0);
@@ -68,7 +67,7 @@ src2<=src2_1stMux when Rsrc2_sel_forward="00" or Rsrc2_sel='1'
 else Rsrc2_mem when Rsrc2_sel_forward="01"
 else Rsrc2_WB when Rsrc2_sel_forward="10";
 
-my_alu:  ALU generic map(n) port map(clk,src1,src2,opcode_in(3 downto 0),Rst,enable_flag_reg,my_output,falgs,SWP_flag,intr,flush);
+my_alu:  ALU generic map(n) port map(src1,src2,opcode_in(3 downto 0),Rst,enable_flag_reg,my_output,falgs,SWP_flag,intr,flush);
 my_falg_reg: flag_Register port map(clk,preset_flags,Rst,falgs,flag_reg_out);
 
 ALU_OUTPUT<= IO_IN when IO_ALU_SEL='1' else my_output when IO_ALU_SEL='0';
