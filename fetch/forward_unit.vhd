@@ -49,8 +49,9 @@ end component;
 component forwarding_unit IS
 PORT(Rsrc1_exc,Rsrc2_exc,Rdest_mem,Rdest_WB: IN std_logic_vector(2 downto 0);
          src1_SEL,src2_SEL:OUT std_logic_vector(1 downto 0);
-         enable_mem:std_logic;
-		 enable_wb:std_logic
+         enable_mem:in std_logic;
+		 enable_wb: in std_logic;
+		 mem_swap_flag:in std_logic
 	     ); 
 END component forwarding_unit;
 --mem
@@ -102,7 +103,7 @@ begin
 
     forwarding_logic:forwarding_unit port map (
         src1_exec_code,src2_exec_code,mem_reg_out,wb_reg_out,
-        src1_SEL,src2_SEL,enable_logic_mem,enable_logic_wb
+        src1_SEL,src2_SEL,enable_logic_mem,enable_logic_wb,mem_swap_flag
 
     );
 
