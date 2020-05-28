@@ -244,7 +244,8 @@ GENERIC (n : integer := 32);
      Rsrc1_value:OUT std_logic_vector(n-1 downto 0);
      jz_flage:OUT std_logic;
      intr:in std_logic;
-     flush:in std_logic
+     flush:in std_logic;
+     swap_flag_in:in std_logic
 	     ); 
 END component;
 
@@ -571,7 +572,7 @@ BEGIN
   execution_stage: EXEC_stage generic map (32) port map(clk,idex_src1_val_out,idex_src2_val_out,
   idex_extended_imm_out,forward_mem_val_out,forward_mem_val_out,forward_WB_val_out,forward_WB_val_out,
   idex_opcode_out,IO_IN,IO_OUT,idex_ex_cs_out(1),idex_ex_cs_out(0),
-  idex_ex_cs_out(2),ForwardUnit_src1_sel,ForwardUnit_src2_sel,reset,flag_reg_in,flag_reg_out,ex_mem_output_in,ex_swap_flag_in,ex_src1_value_in,JZ_signal,idex_intr_out,idex_csFlush_out);
+  idex_ex_cs_out(2),ForwardUnit_src1_sel,ForwardUnit_src2_sel,reset,flag_reg_in,flag_reg_out,ex_mem_output_in,ex_swap_flag_in,ex_src1_value_in,JZ_signal,idex_intr_out,idex_csFlush_out,idex_swap_flag_out);
 
 
 EX_MEM_REG:ex_mem port map (clk,
