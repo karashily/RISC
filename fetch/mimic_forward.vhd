@@ -16,7 +16,8 @@ entity mimic_forward is
       csFlush_exec:in std_logic;
       opcode_in_exec:in std_logic_vector(4 downto 0);
       dec_imm:IN std_logic_vector(31 downto 0);
-      csFlush_dec:in std_logic
+      csFlush_dec:in std_logic;
+      regcode_in_exec:out std_logic
       );
 end mimic_forward;
 
@@ -57,6 +58,6 @@ architecture mimic_forward_arch of mimic_forward is
     else '1' when (regcode=src2_dec and opcode_in_decode="00111" and csFlush_dec='1')
     else '1' when (regcode=dst_dec and csFlush_dec='0' and (opcode_in_decode="00000" or opcode_in_decode="00001" or opcode_in_decode="00010"
     or opcode_in_decode="00011" or opcode_in_decode="00100") )
-    else '1' when (csFlush_exec='0'and (opcode_in_exec="10001" or opcode_in_exec="10011"))
     else '0';
+    regcode_in_exec<='1' when (csFlush_exec='0'and (opcode_in_exec="10001" or opcode_in_exec="10011")) else '0';
   end architecture;
