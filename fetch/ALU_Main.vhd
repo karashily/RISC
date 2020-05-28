@@ -11,7 +11,8 @@ GENERIC (n : integer := 32);
 		 flagReg_out: INOUT std_logic_vector(3 downto 0);
 		 swap_flag:OUT std_logic;
 inter_sig:in std_logic;
-flush_signal:in std_logic);
+flush_signal:in std_logic;
+swap_flagin:std_logic);
 		  
 END ENTITY ALU;
 
@@ -66,7 +67,8 @@ f<= fout when S= "0000"  or S="0001" or S="1010"or S="1011" or S="0010"
 	else (A OR B) when S="0100" 
 	else (NOT A) when S="1001"
 	else  STD_LOGIC_VECTOR(shift_left(signed(A), to_integer(unsigned(B)))) when S="0101" and flush_signal='0'
-	else  B when (S="1000" or S="0111")
+	else  B when (S="1000")
+	else A when swap_flagin='0' and S="0111"
 	else (others =>'0') ;
 Cout<=carry_artihmetic_out when( S="0000" or S="1010" or S="0010" )
    else(not carry_artihmetic_out) when  S="0001"  
