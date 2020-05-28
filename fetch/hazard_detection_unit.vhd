@@ -93,16 +93,16 @@ architecture hazard_detection_unit_arch of hazard_detection_unit is
         clk: in std_logic;
         reset: in std_logic;
         output: out std_logic
-        );
+    );
     END  component;
 
     component  swap_unit IS PORT(
         A: in std_logic_vector(15 downto 0);
         opcode_FD: in std_logic_vector(4 downto 0);
         clk: in std_logic;
-
+    
         output: out std_logic
-        );
+    );
     END component;
 
     component register1 IS PORT(

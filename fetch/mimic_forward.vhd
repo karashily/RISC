@@ -25,10 +25,10 @@ architecture mimic_forward_arch of mimic_forward is
 
   component reg_code_changing is
     port(opcode : in std_logic_vector(4 downto 0);
-        src1, src2, dst: in std_logic_vector(2 downto 0);
-        flush: in std_logic;
-        is_execute_changing: out std_logic;
-        q: out std_logic_vector(1 downto 0));
+    src1, src2, dst: in std_logic_vector(2 downto 0);
+    flush: in std_logic;
+    is_execute_changing: out std_logic;
+    q: out std_logic_vector(1 downto 0));
   
   end component;
 
