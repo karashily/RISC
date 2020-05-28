@@ -14,7 +14,8 @@ entity mimic_forward is
 
       opcode_in_decode:in std_logic_vector(4 downto 0);
       csFlush:in std_logic;
-      opcode_in_exec:in std_logic_vector(4 downto 0)
+      opcode_in_exec:in std_logic_vector(4 downto 0);
+      dec_imm:IN std_logic_vector(31 downto 0)
       );
 end mimic_forward;
 
@@ -38,6 +39,7 @@ architecture mimic_forward_arch of mimic_forward is
            exec_dst_value when ((exec_changing = "01") and (exec_dst = regcode) and (is_execute_changing = '1')) else
            mem_value when (regcode=mem_src) else
            wb_value when (regcode=wb_src) else
+           dec_imm when (regcode=src1_dec) else
            reg_file_value;
     
     -- reg <=src1_exec_value when( regcode=exec_src1 ) 
@@ -48,11 +50,12 @@ architecture mimic_forward_arch of mimic_forward is
     -- else exec_dst_value when(regcode=exec_src1 and (opcode_in_exec="01001" or opcode_in_exec="01010" or opcode_in_exec="01011" or opcode_in_exec="01100" or opcode_in_exec="01101"))
     -- else reg_file_value ;
 
-    regcode_in_decode<='1' when (regcode=src1_dec and (opcode_in_decode="01001" or opcode_in_decode="01010" 
+    regcode_in_decode<='1' when (regcode=src1_dec and csFlush='0' and  (opcode_in_decode="01001" or opcode_in_decode="01010" 
     or opcode_in_decode="01011" or opcode_in_decode="01101" or opcode_in_decode="00111" or opcode_in_decode="00101"
-    or opcode_in_decode="00110" or opcode_in_decode="10001" or opcode_in_decode="10010" or opcode_in_decode="10011"))
+    or opcode_in_decode="00110" or opcode_in_decode="10001"  or opcode_in_decode="10011"))
     else '1' when (regcode=src2_dec and opcode_in_decode="00111" and csFlush='1')
-    else '1' when (regcode=dst_dec and (opcode_in_decode="00000" or opcode_in_decode="00001" or opcode_in_decode="00010"
+    else '1' when (regcode=dst_dec and csFlush='0' and (opcode_in_decode="00000" or opcode_in_decode="00001" or opcode_in_decode="00010"
     or opcode_in_decode="00011" or opcode_in_decode="00100") )
+    else '1' when (csFlush='0'and (opcode_in_exec="10001" or opcode_in_exec="10011"))
     else '0';
   end architecture;
