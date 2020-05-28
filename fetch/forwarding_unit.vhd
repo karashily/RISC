@@ -13,8 +13,7 @@ END ENTITY forwarding_unit;
 ARCHITECTURE forwarding_unit_arch OF forwarding_unit IS
 begin
 src1_SEL<="00" when (Rsrc1_exc /=Rdest_mem and Rsrc1_exc /=Rdest_WB )
-else "00" when (Rsrc1_exc = Rdest_mem and enable_mem='1' and mem_swap_flag='1')
-else "01" when (Rsrc1_exc = Rdest_mem and enable_mem='1' )
+else "01" when (Rsrc1_exc = Rdest_mem and enable_mem='1'and mem_swap_flag='0' )
 else "10" when (Rsrc1_exc = Rdest_WB and enable_wb='1'  )
 else "00";
 src2_SEL<="00" when (Rsrc2_exc /=Rdest_mem and Rsrc2_exc /=Rdest_WB )
