@@ -39,7 +39,7 @@ GENERIC (n : integer := 32);
 		 swap_flag:OUT std_logic;
 		 inter_sig:in std_logic;
 		 flush_signal:in std_logic;
-		 swap_flagin:std_logic); 
+		 swap_flagin:in std_logic); 
 END component ALU;
 
 component flag_Register is  
