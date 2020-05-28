@@ -30,6 +30,7 @@ entity hazard_detection_unit is
         INT_EM: in STD_LOGIC;
         RESET_EM: in STD_LOGIC;
         regCode_in_dec: in STD_LOGIC;
+        regcode_in_exec:in std_logic;
 
         
         -- outputs
@@ -120,7 +121,8 @@ begin
                 stall_bit_5 or 
                 stall_bit_6 or 
                 stall_bit_7 or
-                stall_bit_8_bef
+                stall_bit_8_bef or 
+                regcode_in_exec
                 );
     
     control_unit_mux <= stall_bit_1 or 

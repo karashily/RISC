@@ -11,13 +11,13 @@ end reg;
 architecture arch of reg is
   signal qq : std_logic_vector(n-1 DOWNTO 0);
   begin
-    q <= qq;
+    -- q <= qq;
     process(clk, rst)
       begin
         if(rst ='1') then
-          qq <= (others=>'0');
+          q <= (others=>'0');
         elsif rising_edge(clk) and load = '1' then
-          qq <= d;
+          q <= d;
         end if;
     end process;
   end architecture;

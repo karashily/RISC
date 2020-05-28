@@ -277,7 +277,8 @@ component hazard_detection_unit is
       INT_EM: in STD_LOGIC;
       RESET_EM: in STD_LOGIC;
       regCode_in_dec: in STD_LOGIC;
-      
+      regcode_in_exec:in std_logic;
+
       -- outputs
       wrong_prediction_bit: out STD_LOGIC;
       load_ret_PC: out STD_LOGIC;
@@ -523,6 +524,7 @@ BEGIN
                                                INT_EM,
                                                RESET_EM,
                                                regCode_in_dec,
+                                               regCode_in_exec,
                                                wrong_prediction_bit,
                                                load_ret_PC,
                                                PC_load,

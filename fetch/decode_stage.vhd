@@ -83,7 +83,7 @@ begin
     mem_cs <= cu_mem_cs when cs_flush = '0' else (others=>'0');
     wb_cs <= cu_wb_cs when cs_flush = '0' else (others=>'0');
     swap_flag <= cu_swap_flag when cs_flush = '0' else '0';
-   
+
     process(clk)
     begin
         if(falling_edge(clk)) then
