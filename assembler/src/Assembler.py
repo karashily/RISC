@@ -26,8 +26,8 @@ def asm2mc(ops):
             try:    
                 num = int(ops[i][0], 16)
                 num = (32-len(bin(num))+2)*'0' + bin(num).replace("0b", "")
-                machine_code.append(num[:16])
                 machine_code.append(num[16:])
+                machine_code.append(num[:16])
             except:
                 # if it returns an exception then it's a no operand instruction
                 opcode = util.get_opcode(ops[i][0])
@@ -41,7 +41,7 @@ def asm2mc(ops):
                 # checking if it's a .org
                 for i in range(int(ops[i][1], 16) - len(machine_code)):
                     # fill the hole between the desired address and current address with zeros
-                    machine_code.append("0"*16)  
+                    machine_code.append("0100000000000000")
 
             else:        
                 # else it's an instruction
@@ -61,14 +61,23 @@ def asm2mc(ops):
                     machine_code.append(mc[16:])
     return machine_code
 
+def prepare_ram(machine_code):
+	ram = []
+	for i in range(len(machine_code)):
+		entry = str(i) + " => \"" + machine_code[i] + "\","
+		ram.append(entry)
+	ram.append("others => \"0100000000000000\"")
+	return ram
+
 
 asm_file = input("Assembly code filename: ")
 ops = clean(read(asm_file))
 machine_code = asm2mc(ops)
+ram = prepare_ram(machine_code)
 
 mc_filename = asm_file.split(".")[0] + ".txt"
 mc_file = open(mc_filename, "w")
-for i in machine_code:
+for i in ram:
      mc_file.write(i + "\n")
 mc_file.close()
 
