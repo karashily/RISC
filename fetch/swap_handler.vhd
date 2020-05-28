@@ -10,11 +10,10 @@ end swap_handler;
  
 architecture arch of swap_handler is
 begin
-    val_sel <= "10" when Opcode = "00111" and swap_flag = '1' else
-            "11" when Opcode = "00111" and swap_flag = '0' else
+    val_sel <= "10" when Opcode = "00111" else
             wb_cs(1 downto 0);
     
-    addr_sel <= "01" when Opcode = "00111" and swap_flag = '1' else
+    addr_sel <= "00" when Opcode = "00111" and swap_flag = '1' else
             "10" when Opcode = "00111" and swap_flag = '0' else
             wb_cs(3 downto 2);
 
