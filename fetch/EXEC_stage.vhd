@@ -35,7 +35,8 @@ GENERIC (n : integer := 32);
 		opIN: IN std_logic_vector(4 downto 0);
 	     Rst,flag_en:IN std_logic;
 	     F: INOUT  std_logic_vector(n-1 downto 0);
-		 flagReg_out: INOUT std_logic_vector(3 downto 0);
+		 flagReg_out: in std_logic_vector(3 downto 0);
+		 flagReg_in:out std_logic_vector(3 downto 0);
 		 swap_flag:OUT std_logic;
 		 inter_sig:in std_logic;
 		 flush_signal:in std_logic;
@@ -67,8 +68,17 @@ signal flag_reg_en:std_logic;
 begin
 flag_reg_out<=flagsFromReg;
 jz_flage<=falgs(3) or flagsFromReg(3);
-enable_flag_reg<='1' when opcode_in="01001" or opcode_in="01010" or opcode_in="01011" or opcode_in="00000" 
-or opcode_in="00001" or opcode_in="00010" or opcode_in="00011" or opcode_in="00100" or opcode_in="00101" or opcode_in="00110";
+enable_flag_reg<='1' when
+(opcode_in="00000"
+ or opcode_in="00001" 
+ or opcode_in="01010"
+ or opcode_in="01011"
+ or opcode_in="00011" 
+ or opcode_in="00100" 
+ or opcode_in="01001" 
+ or opcode_in="00110"
+ or opcode_in="00101" 
+or  opcode_in="00010") else '0';
 
 
 src1<=Rsrc1 when Rsrc1_sel_forward="00"
@@ -89,7 +99,7 @@ src2<=src2_1stMux when Rsrc2_sel_forward="00" or Rsrc2_sel='1'
 else Rsrc2_mem when Rsrc2_sel_forward="01"
 else Rsrc2_WB when Rsrc2_sel_forward="10";
 flag_reg_en<='1' when  ((flush='0') and not(opcode_in="01000" or opcode_in="01101" or opcode_in="01100" or opcode_in="00111"))else '0';
-my_alu:  ALU generic map(n) port map(src1,src2,opcode_in,Rst,enable_flag_reg,my_output,falgs,SWP_flag,intr,flush,swap_flag_in);
+my_alu:  ALU generic map(n) port map(src1,src2,opcode_in,Rst,enable_flag_reg,my_output,flagsFromReg,falgs,SWP_flag,intr,flush,swap_flag_in);
 my_falg_reg: regi generic map (4) port map(falgs,flag_reg_en,Rst,clk,flagsFromReg);
 
 ALU_OUTPUT<= IO_IN when IO_ALU_SEL='1' else my_output when IO_ALU_SEL='0';

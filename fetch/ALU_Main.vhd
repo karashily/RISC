@@ -8,7 +8,8 @@ GENERIC (n : integer := 32);
 	     opIN: IN std_logic_vector(4 downto 0);
 	     Rst,flag_en:IN std_logic;
 	     F: INOUT  std_logic_vector(n-1 downto 0);
-		 flagReg_out: INOUT std_logic_vector(3 downto 0);
+		 flagReg_out: IN std_logic_vector(3 downto 0);
+		 flagReg_in:out std_logic_vector(3 downto 0);
 		 swap_flag:OUT std_logic;
 inter_sig:in std_logic;
 flush_signal:in std_logic;
@@ -44,51 +45,49 @@ end component;
 --SHL	00101
 --SHR	00110
 --SWAP	00111
-Signal S:std_logic_vector(3 downto 0);
-SIGNAL flagReg_in :std_logic_vector(3 downto 0);
+
+SIGNAL flagReg_in_tmp :std_logic_vector(3 downto 0);
 SIGNAL Cout,Z,Nflg,EnableFlagReg,carry_artihmetic,carry_artihmetic_out :std_logic;
 signal sigA,sigB,fout : std_logic_vector (n-1 downto 0);
 constant ONE:   UNSIGNED(n-1 downto 0) := (0 => '1', others => '0');
 begin
-S<=opIN(3 downto 0);
+
 nadder:  my_nadder generic map(n) port map(sigA,sigB,carry_artihmetic,fout,carry_artihmetic_out);
-sigA<= A  when S ="0000" or S ="0001" or S="1010" or S="1011" or S="0010"--add sub inc dec
+sigA<= A  when opIN="00000" or opIN="00001" or opIN="01010" or opIN="01011" or opIN="00010"--add sub inc dec
  else (others => '0');
 
 
-sigB<= B  when (S="0000" or S="0010") --add
-  else std_logic_vector(unsigned (not B) + ONE) when  S="0001" --sub
-	   else (others => '1') when S = "1011" --dec
+sigB<= B  when (opIN="00000" or opIN="00010") --add
+  else std_logic_vector(unsigned (not B) + ONE) when  opIN="00001" --sub
+	   else (others => '1') when opIN="01011" --dec
 	   else (others => '0');
 
-carry_artihmetic<= '0' when S="0000" or S="0001"  or S="1011" or S="0010" else '1';
-f<= fout when S= "0000"  or S="0001" or S="1010"or S="1011" or S="0010"
-    else STD_LOGIC_VECTOR(shift_right(signed(A),to_integer(unsigned(B)))) when S="0110" and flush_signal='0'
-    else (A AND B) when S="0011" 
-	else (A OR B) when S="0100" 
-	else (NOT A) when S="1001"
-	else  STD_LOGIC_VECTOR(shift_left(signed(A), to_integer(unsigned(B)))) when S="0101" and flush_signal='0'
+carry_artihmetic<= '0' when opIN="00000" or opIN="00001"  or opIN="01011" or opIN="00010" else '1';
+f<= fout when opIN="00000"  or opIN="00001" or opIN="01010"or opIN="01011" or opIN="00010"
+    else STD_LOGIC_VECTOR(shift_right(signed(A),to_integer(unsigned(B)))) when opIN="00110" and flush_signal='0'
+    else (A AND B) when opIN="00011" 
+	else (A OR B) when opIN="00100" 
+	else (NOT A) when opIN="01001"
+	else  STD_LOGIC_VECTOR(shift_left(signed(A), to_integer(unsigned(B)))) when opIN="00101" and flush_signal='0'
 	else  B when (opIN="01000")
-	else A when swap_flagin='0' and S="0111"
-	else B when swap_flagin='1' and S="0111"
+	else A when swap_flagin='0' and opIN="00111"
+	else B when swap_flagin='1' and opIN="00111"
 	else (others =>'Z') ;
-Cout<=carry_artihmetic_out when( S="0000" or S="1010" or S="0010" )
-   else(not carry_artihmetic_out) when  S="0001"  
-   else A(n - to_integer(unsigned(B))-1) when S="0101" and inter_sig/='1' and flush_signal='0'
-   else A(to_integer(unsigned(B))-1) when S="0110" and B/="00000000000000000000000000000000" and inter_sig/='1' and flush_signal='0'
+Cout<=carry_artihmetic_out when( opIN="00000" or opIN="01010" or opIN="00010" or opIN="01011" or opIN="00001" )
+   else A(n - to_integer(unsigned(B))-1) when opIN="00101" and inter_sig/='1' and flush_signal='0'
+   else A(to_integer(unsigned(B))-1) when opIN="00110" and B/="00000000000000000000000000000000" and inter_sig/='1' and flush_signal='0'
    else '0'; 	
 --flage register
-EnableFlagReg<='1' when((S="0000"
- or S="0001" 
- or S="1010"
- or S="1011"
- or S="0011" 
- or S="0100" 
- or S="1001" 
- or S="0110"
- or S="0101" 
-or S="0110")
- and flag_en ='1' );
+EnableFlagReg<='1' when((opIN="00000"
+ or opIN="00001" 
+ or opIN="01010"
+ or opIN="01011"
+ or opIN="00011" 
+ or opIN="00100" 
+ or opIN="01001" 
+ or opIN="00110"
+ or opIN="00101" 
+or  opIN="00010")) else '0';
 -- Z<= '1' when ((not opIN="11000") or ((flagReg_out(3)='0') and ( F="00000000000000000000000000000000"))) else '0' when ((flagReg_out(3)='1' and opIN="11000") or ( F/="00000000000000000000000000000000"))  ;
 Z <= '0' when (flagReg_out(3)='1' and opIN="11000") else
 	'1' when (F="00000000000000000000000000000000" and EnableFlagReg ='1' )else
@@ -96,10 +95,10 @@ Z <= '0' when (flagReg_out(3)='1' and opIN="11000") else
 	 flagReg_out(3);
 
 Nflg<= '1' when F(n-1) = '1' else '0';
-flagReg_in<=  Z & Nflg & Cout & '0';
-flagReg_out<= (OTHERS=>'0') when Rst='1' else flagReg_in;
+flagReg_in_tmp<=  Z & Nflg & Cout & '0';
+flagReg_in<= (OTHERS=>'0') when Rst='1' else flagReg_in_tmp;
 
 -- flagReg_in when (EnableFlagReg ='1') else
 -- (OTHERS=>'0') when Rst='1';
-swap_flag<='1' when S="0111" else '0';
+swap_flag<='1' when opIN="00111" else '0';
 end architecture;
