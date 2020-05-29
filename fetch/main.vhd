@@ -520,7 +520,7 @@ BEGIN
                                                Rsrc1_EM_code,
                                                Rsrc1_MW_code,
                                                Rsrc2_DE_code,
-                                               ZF,
+                                               JZ_signal,
                                                INT,
                                                INT_EM,
                                                RESET_EM,

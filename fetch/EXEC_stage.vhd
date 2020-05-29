@@ -32,7 +32,7 @@ ARCHITECTURE EXEC_arch OF EXEC_stage IS
 component ALU IS
 GENERIC (n : integer := 32);
 	PORT(A,B: IN std_logic_vector(n-1 downto 0);
-	     S: IN std_logic_vector(3 downto 0);
+		opIN: IN std_logic_vector(4 downto 0);
 	     Rst,flag_en:IN std_logic;
 	     F: INOUT  std_logic_vector(n-1 downto 0);
 		 flagReg_out: INOUT std_logic_vector(3 downto 0);
@@ -47,14 +47,26 @@ component flag_Register is
         D : in  std_logic_vector (3 downto 0);  
         Q : out std_logic_vector (3 downto 0));  
 end component flag_Register ; 
-
+component regi IS
+generic( Nbits : positive := 16 );
+PORT(
+    d   : IN std_logic_vector(Nbits-1 DOWNTO 0);
+    ld  : IN std_logic; -- load/enable.
+    clr : IN std_logic; -- async. clear.
+    clk : IN std_logic; -- clock.
+    q   : OUT std_logic_vector(Nbits-1 DOWNTO 0) -- output
+);
+END component;
 signal src1,src2,src2_1stMux: std_logic_vector(n-1 downto 0);
 signal enable_flag_reg,preset_flags:std_logic;
 signal my_output: std_logic_vector(n-1 downto 0);
 signal falgs:std_logic_vector(3 downto 0);
 signal SWP_flag:std_logic;
+signal flagsFromReg:std_logic_vector(3 downto 0);
+signal flag_reg_en:std_logic;
 begin
-jz_flage<=flag_reg_in(3) when opcode_in="11000" else '0';
+flag_reg_out<=flagsFromReg;
+jz_flage<=falgs(3) or flagsFromReg(3);
 enable_flag_reg<='1' when opcode_in="01001" or opcode_in="01010" or opcode_in="01011" or opcode_in="00000" 
 or opcode_in="00001" or opcode_in="00010" or opcode_in="00011" or opcode_in="00100" or opcode_in="00101" or opcode_in="00110";
 
@@ -76,9 +88,9 @@ begin
 src2<=src2_1stMux when Rsrc2_sel_forward="00" or Rsrc2_sel='1' 
 else Rsrc2_mem when Rsrc2_sel_forward="01"
 else Rsrc2_WB when Rsrc2_sel_forward="10";
-
-my_alu:  ALU generic map(n) port map(src1,src2,opcode_in(3 downto 0),Rst,enable_flag_reg,my_output,falgs,SWP_flag,intr,flush,swap_flag_in);
-my_falg_reg: flag_Register port map(clk,preset_flags,Rst,falgs,flag_reg_out);
+flag_reg_en<='1' when  ((flush='0') and not(opcode_in="01000" or opcode_in="01101" or opcode_in="01100" or opcode_in="00111"))else '0';
+my_alu:  ALU generic map(n) port map(src1,src2,opcode_in,Rst,enable_flag_reg,my_output,falgs,SWP_flag,intr,flush,swap_flag_in);
+my_falg_reg: regi generic map (4) port map(falgs,flag_reg_en,Rst,clk,flagsFromReg);
 
 ALU_OUTPUT<= IO_IN when IO_ALU_SEL='1' else my_output when IO_ALU_SEL='0';
 IO_OUT<= (OTHERS=>'Z') when OUT_SEL='0' else src1 when OUT_SEL='1';
