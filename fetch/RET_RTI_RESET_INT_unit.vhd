@@ -56,7 +56,9 @@ BEGIN
     load_reg <= '0' when (stall_bit_5 = '1' and end_stall = '0') else '1';
     reg : register1 port map (start_stall,load_reg,'0',clk,stall_bit_5);
     reg2 : register1 port map (end_stall,load_reg,'0',clk,end_stall_delayed);
-    output <= (stall_bit_5 and not end_stall_delayed)or start_stall;
+    output <= ((stall_bit_5  and not end_stall_delayed )or start_stall) when (opcode = RET_opcode)
+    else ((stall_bit_5 or start_stall) and not end_stall_delayed);
+    ;
 
 
 
