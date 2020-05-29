@@ -50,16 +50,21 @@ run
 run
 run
 run
-examine PC
-# 00000000000000000000001100000000
+
+force -freeze sim:/main/int 1 0
+run
+force -freeze sim:/main/int 0 0
 run
 run
 run
 run
 run
 run
-examine PC
-# 00000000000000000000001000000010
+run
+run
+run
+run
+run
 run
 run
 run
