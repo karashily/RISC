@@ -89,10 +89,17 @@ EnableFlagReg<='1' when((S="0000"
  or S="0101" 
 or S="0110")
  and flag_en ='1' );
-Z<= '1' when ((not opIN="11000") or (flagReg_out(3)='0'))and ( F="00000000000000000000000000000000") else '0' when flagReg_out(3)='1' and opIN="11000" ;
+-- Z<= '1' when ((not opIN="11000") or ((flagReg_out(3)='0') and ( F="00000000000000000000000000000000"))) else '0' when ((flagReg_out(3)='1' and opIN="11000") or ( F/="00000000000000000000000000000000"))  ;
+Z <= '0' when (flagReg_out(3)='1' and opIN="11000") else
+	'1' when (F="00000000000000000000000000000000" and EnableFlagReg ='1' )else
+	'0' when (F/="00000000000000000000000000000000" and EnableFlagReg ='1' )else
+	 flagReg_out(3);
+
 Nflg<= '1' when F(n-1) = '1' else '0';
 flagReg_in<=  Z & Nflg & Cout & '0';
-flagReg_out<= flagReg_in when (EnableFlagReg ='1') else
-(OTHERS=>'0') when Rst='1';
+flagReg_out<= (OTHERS=>'0') when Rst='1' else flagReg_in;
+
+-- flagReg_in when (EnableFlagReg ='1') else
+-- (OTHERS=>'0') when Rst='1';
 swap_flag<='1' when S="0111" else '0';
 end architecture;

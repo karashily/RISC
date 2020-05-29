@@ -31,6 +31,7 @@ entity hazard_detection_unit is
         RESET_EM: in STD_LOGIC;
         regCode_in_dec: in STD_LOGIC;
         regcode_in_exec:in std_logic;
+        ex_instr_flushed: in std_logic;
 
         
         -- outputs
@@ -84,6 +85,7 @@ architecture hazard_detection_unit_arch of hazard_detection_unit is
         port(opcode_DE : in std_logic_vector(4 downto 0);
               prediction_bit : in std_logic;
               ZF : in std_logic;
+              ex_instr_flushed: in std_logic;
             q: out std_logic);
     end component;
 
@@ -148,7 +150,7 @@ begin
 
     fetch_stall <= stall_bit_2;
 
-    wrong_prediction_hazard : wrong_prediction_unit port map (opcode_DE,prediction_bit,ZF,stall_bit_4);
+    wrong_prediction_hazard : wrong_prediction_unit port map (opcode_DE,prediction_bit,ZF,ex_instr_flushed,stall_bit_4);
     swap_hazard: swap_unit port map (A,opcode_FD,clk,stall_bit_6);
     swap_reg: register1 port map (stall_bit_6,'1','0',clk,stall_bit_6_delayed);
     swap_reg_2: register1 port map (stall_bit_6_delayed,'1','0',clk,stall_bit_6_delayed_delayed);
