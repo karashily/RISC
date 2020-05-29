@@ -71,8 +71,8 @@ begin
 
     mem_reg<=mem_reg_out;
     wb_reg<=wb_reg_out;
-    enable_logic_mem<=mem_wb_cs(3) or mem_wb_cs(2) or mem_wb_cs(1) or mem_wb_cs(0) ;
-    enable_logic_wb<=wb_wb_cs(3)or wb_wb_cs(2) or wb_wb_cs(1) or wb_wb_cs(0);
+    enable_logic_mem<=mem_wb_cs(3) or mem_wb_cs(2) or mem_wb_cs(1) or mem_wb_cs(0) or( wb_swap_flag and (not (mem_swap_flag)));
+    enable_logic_wb<=wb_wb_cs(3)or wb_wb_cs(2) or wb_wb_cs(1) or wb_wb_cs(0) or wb_swap_flag ;
 
     mem_swap_handler: swap_handler port map(opcode => mem_opcode,
             swap_flag => mem_swap_flag,

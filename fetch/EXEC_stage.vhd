@@ -63,7 +63,7 @@ src1<=Rsrc1 when Rsrc1_sel_forward="00"
 else Rsrc1_mem when Rsrc1_sel_forward="01"
 else Rsrc1_WB when Rsrc1_sel_forward="10";
 Rsrc1_value<=src1;
-process(Rsrc2_sel)
+process(Rsrc2_sel,clk)
 begin
 	if(Rsrc2_sel='1')then 
 	src2_1stMux<=imm;
