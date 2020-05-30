@@ -87,7 +87,7 @@ else Rsrc1_WB when Rsrc1_sel_forward="10";
 Rsrc1_value<=src1;
 process(Rsrc2_sel,clk)
 begin
-	if(Rsrc2_sel='1')then 
+	if(Rsrc2_sel='1' or opcode_in="10010" )then 
 	src2_1stMux<=imm;
 	else src2_1stMux<=Rsrc2;
 	end if;
