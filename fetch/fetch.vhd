@@ -11,6 +11,7 @@ entity fetch is
         PC_flags_mem :in std_logic_vector(31 downto 0);
         unpredicted_PC_E: in std_logic_vector(31 downto 0);
         load_ret_PC: in std_logic;
+        load_ret_PC_int: in std_logic;
         wrong_prediction_bit: in std_logic;
         PC_load: in std_logic;
         opcode_E: in std_logic_vector(4 downto 0);
@@ -44,6 +45,8 @@ architecture fetch_arch of fetch is
           prediction_bit: in std_logic;
     
           load_ret_PC: in std_logic;
+          load_ret_PC_int: in std_logic;
+
           wrong_prediction_bit: in std_logic;
     
           clk: in std_logic;
@@ -73,7 +76,7 @@ architecture fetch_arch of fetch is
 begin
     PC_mem(19 downto 0) <= PC_flags_mem(19 downto 0);
     PC_mem(31 downto 20) <= (others => '0');
-    PC_pred : PC_predictor port map (A,Rdst_val,PC,PC_mem,unpredicted_PC_E,prediction_bit,load_ret_PC,wrong_prediction_bit,clk,PC_predicted,PC_unpredicted);
+    PC_pred : PC_predictor port map (A,Rdst_val,PC,PC_mem,unpredicted_PC_E,prediction_bit,load_ret_PC,load_ret_PC_int,wrong_prediction_bit,clk,PC_predicted,PC_unpredicted);
     -- PC_reg_in <= PC_predicted when reset = '0' else PC_start;
     PC_reg_in <= PC_predicted;
     PC_reg : regi generic map (32) port map (PC_reg_in,PC_load,'0',clk,PC);

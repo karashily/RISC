@@ -3,20 +3,17 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 
-ENTITY  RET_RTI_RESET_INT_unit IS PORT(
-    A: in std_logic_vector(15 downto 0);
-    opcode_DE: in std_logic_vector(4 downto 0);
-    INT: in std_logic;
-    INT_DE: in std_logic;
+ENTITY  RESET_unit IS PORT(
     RESET: in std_logic;
     RESET_DE: in std_logic;
     clk: in std_logic;
 
-    output: out std_logic
+    output_pc: out std_logic;
+    output_control: out std_logic
 );
-END  RET_RTI_RESET_INT_unit;
+END  RESET_unit;
 
-ARCHITECTURE  RET_RTI_RESET_INT_arch OF  RET_RTI_RESET_INT_unit IS
+ARCHITECTURE  RESET_arch OF  RESET_unit IS
 signal opcode : std_logic_vector(4 downto 0);
 
 constant RET_opcode: std_logic_vector(4 downto 0) := "11011";
@@ -26,7 +23,10 @@ signal start_stall: std_logic := '0';
 signal end_stall: std_logic := '0';
 signal end_stall_delayed: std_logic := '0';
 signal stall_bit_5: std_logic := '0';
+signal stall_bit_5_delayed: std_logic := '0';
+signal stall_bit_5_delayed_delayed: std_logic := '0';
 signal load_reg: std_logic;
+signal s: std_logic;
 
 component register1 IS PORT(
     d   : IN STD_LOGIC;
@@ -38,28 +38,27 @@ component register1 IS PORT(
 END component;
 
 BEGIN
-    opcode <= A(15 downto 11);
     start_stall <= '1' when
-        opcode = RET_opcode or
-        opcode = RTI_opcode or
-        INT = '1' or
         RESET = '1'
     else '0';
 
     end_stall <= '1' when
-        opcode_DE = RET_opcode or
-        opcode_DE = RTI_opcode or
-        INT_DE = '1' or
         RESET_DE = '1'
     else '0';
 
+    s <= stall_bit_5 or start_stall;
+
     load_reg <= '0' when (stall_bit_5 = '1' and end_stall = '0') else '1';
-    reg : register1 port map (start_stall,load_reg,end_stall,clk,stall_bit_5);
-    reg2 : register1 port map (end_stall,load_reg,'0',clk,end_stall_delayed);
+    reg_PC : register1 port map (start_stall,load_reg,end_stall,clk,stall_bit_5);
+    reg_cont : register1 port map (s,'1','0',clk,stall_bit_5_delayed);
+    reg_cont_2 : register1 port map (stall_bit_5_delayed,'1','0',clk,stall_bit_5_delayed_delayed);
+    -- reg_cont_2 : register1 port map (stall_bit_5_delayed,'1','0',clk,stall_bit_5_delayed_delayed);
+    -- reg2 : register1 port map (end_stall,load_reg,'0',clk,end_stall_delayed);
     -- output <=  ((stall_bit_5 or start_stall) and not end_stall_delayed);
-    output <= stall_bit_5;
+    output_pc <= stall_bit_5 or start_stall;
+    output_control <= stall_bit_5_delayed or stall_bit_5_delayed_delayed;
     -- ((stall_bit_5  and not end_stall_delayed )or start_stall) when (opcode = RET_opcode)
     -- else
 
 
-END  RET_RTI_RESET_INT_arch; 
+END  RESET_arch; 

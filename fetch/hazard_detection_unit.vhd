@@ -27,7 +27,7 @@ entity hazard_detection_unit is
         ZF: in STD_LOGIC;
         -- RET-RTI-Reset-INT
         INT: in STD_LOGIC;
-        INT_DE: in STD_LOGIC;
+        INT_EM: in STD_LOGIC;
         RESET_DE: in STD_LOGIC;
         regCode_in_dec: in STD_LOGIC;
         regcode_in_exec:in std_logic;
@@ -37,6 +37,7 @@ entity hazard_detection_unit is
         -- outputs
         wrong_prediction_bit: out STD_LOGIC;
         load_ret_PC: out STD_LOGIC;
+        load_ret_PC_int: out STD_LOGIC;
         PC_write: out STD_LOGIC;
         control_unit_mux: out STD_LOGIC;
         fetch_stall: out STD_LOGIC
@@ -57,6 +58,12 @@ architecture hazard_detection_unit_arch of hazard_detection_unit is
     signal stall_bit_7: std_logic := '0';
     signal stall_bit_8: std_logic := '0';
     signal stall_bit_8_bef: std_logic := '0';
+    signal reset_stall_pc: std_logic := '0';
+    signal reset_stall_control: std_logic := '0';
+    signal int_stall_pc: std_logic := '0';
+    signal int_stall_control: std_logic := '0';
+    signal ret_rti_stall_pc: std_logic := '0';
+    signal ret_rti_stall_control: std_logic := '0';
 
 
     signal reg_exec_en: std_logic := '0';
@@ -72,9 +79,9 @@ architecture hazard_detection_unit_arch of hazard_detection_unit is
 
     component  RET_RTI_RESET_INT_unit IS PORT(
         A: in std_logic_vector(15 downto 0);
-        opcode_DE: in std_logic_vector(4 downto 0);
+        opcode_EM: in std_logic_vector(4 downto 0);
         INT: in std_logic;
-        INT_DE: in std_logic;
+        INT_EM: in std_logic;
         RESET: in std_logic;
         RESET_DE: in std_logic;
         clk: in std_logic;
@@ -118,6 +125,32 @@ architecture hazard_detection_unit_arch of hazard_detection_unit is
     );
     END component;
 
+    component  RESET_unit IS PORT(
+        RESET: in std_logic;
+        RESET_DE: in std_logic;
+        clk: in std_logic;
+        output_pc: out std_logic;
+        output_control: out std_logic
+        );
+    END  component;
+
+    component  INT_unit IS PORT(
+        INT: in std_logic;
+        INT_EM: in std_logic;
+        clk: in std_logic;
+        output_pc: out std_logic;
+        output_control: out std_logic
+        );
+    END  component;
+
+    component  RTI_RET_unit IS PORT(
+        A: in std_logic_vector(15 downto 0);
+        opcode_DE: in std_logic_vector(4 downto 0);
+        clk: in std_logic;
+        output_pc: out std_logic;
+        output_control: out std_logic);
+    END  component;
+
 begin
 
     reg_exec_en <= '1' when (A(15 downto 11) = "11000" or A(15 downto 11) = "11001" or A(15 downto 11) = "11010") and stall_bit_2 = '0' else '0';
@@ -125,27 +158,33 @@ begin
     PC_write <= not( 
                 stall_bit_1 or 
                 stall_bit_3 or 
-                stall_bit_5 or 
+                -- stall_bit_5 or 
                 stall_bit_6 or 
                 stall_bit_7 or
                 stall_bit_8_bef or 
-                (regcode_in_exec and reg_exec_en)
+                (regcode_in_exec and reg_exec_en) or
+                reset_stall_pc or
+                int_stall_pc or
+                ret_rti_stall_pc
                 );
     
     control_unit_mux <= stall_bit_1 or 
                         stall_bit_2 or 
                         stall_bit_3 or 
                         stall_bit_4 or 
-                        stall_bit_5_delayed or 
+                        -- stall_bit_5_delayed or 
                         stall_bit_6_delayed_delayed or 
                         stall_bit_7 or
-                        stall_bit_8
+                        stall_bit_8 or
+                        reset_stall_control or 
+                        int_stall_control or
+                        ret_rti_stall_control
                         ;
 
     wrong_prediction_bit <= stall_bit_4;
 
     long_fetch_hazard : fetch_hazard port map (A,clk,reset,stall_bit_2);
-    RET_RTI_RESET_INT_hazard : RET_RTI_RESET_INT_unit port map (A,opcode_DE,INT,INT_DE,RESET,RESET_DE,clk,stall_bit_5);
+    -- RET_RTI_RESET_INT_hazard : RET_RTI_RESET_INT_unit port map (A,opcode_EM,INT,INT_EM,RESET,RESET_DE,clk,stall_bit_5);
     reset_reg: register1 port map (stall_bit_5,'1','0',clk,stall_bit_5_delayed);
     reset_reg_2: register1 port map (stall_bit_5_delayed,'1','0',clk,stall_bit_5_delayed_delayed);
     -- load_ret_PC <= '1' when stall_bit_5_delayed = 
@@ -160,16 +199,27 @@ begin
     swap_reg: register1 port map (stall_bit_6,'1','0',clk,stall_bit_6_delayed);
     swap_reg_2: register1 port map (stall_bit_6_delayed,'1','0',clk,stall_bit_6_delayed_delayed);
 
+    -- reset
+    reset_hazard: RESET_unit port map (RESET,RESET_DE,clk,reset_stall_pc,reset_stall_control);
+    interrupt_hazard: INT_unit port map (INT,INT_EM,clk,int_stall_pc,int_stall_control);
+    rti_ret_hazard: RTI_RET_unit port map (A,opcode_DE,clk,ret_rti_stall_pc,ret_rti_stall_control);
 
 
     process(clk,stall_bit_5)
         begin
             if rising_edge(clk) then 
-            if (stall_bit_5 = '1') then
-                load_ret_PC <= '1';
-            else
-                load_ret_PC <= '0';
-            end if;
+                if (reset_stall_pc = '1'  or int_stall_pc = '1' or ret_rti_stall_pc = '1' ) then
+                    load_ret_PC <= '1';
+                else
+                    load_ret_PC <= '0';
+                end if;
+
+                if (int_stall_pc = '1')then
+                    load_ret_PC_int <= '1';
+                else
+                    load_ret_PC_int <= '0';
+
+                end if;
             end if;
             
         end process;

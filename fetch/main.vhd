@@ -21,6 +21,7 @@ signal Rdst_val: std_logic_vector(31 downto 0):= (others => '1');
 signal PC_flags_mem: std_logic_vector(31 downto 0);
 signal unpredicted_PC_E: std_logic_vector(31 downto 0);
 signal load_ret_PC: std_logic := '0';
+signal load_ret_PC_int: std_logic := '0';
 signal wrong_prediction_bit: std_logic := '0';
 signal PC_load: std_logic := '0';
 signal PC: std_logic_vector(31 downto 0);
@@ -37,7 +38,7 @@ signal Rsrc1_EM_code: STD_LOGIC_VECTOR (2 DOWNTO 0) := (others => '0');
 signal Rsrc1_MW_code: STD_LOGIC_VECTOR (2 DOWNTO 0) := (others => '0');
 signal Rsrc2_DE_code: STD_LOGIC_VECTOR (2 DOWNTO 0) := (others => '0');
 signal ZF: STD_LOGIC := '0';
-signal INT_DE: STD_LOGIC := '0';
+signal INT_EM: STD_LOGIC := '0';
 signal RESET_DE: STD_LOGIC := '0';
 signal control_unit_mux: STD_LOGIC := '0';
 signal fetch_stall: STD_LOGIC := '0';
@@ -212,6 +213,7 @@ component fetch is
         PC_flags_mem: in std_logic_vector(31 downto 0);
         unpredicted_PC_E: in std_logic_vector(31 downto 0);
         load_ret_PC: in std_logic;
+        load_ret_PC_int: in std_logic;
         wrong_prediction_bit: in std_logic;
         PC_load: in std_logic;
         opcode_E: in std_logic_vector(4 downto 0);
@@ -275,7 +277,7 @@ component hazard_detection_unit is
       ZF: in STD_LOGIC;
       -- RET-RTI-Reset-INT
       INT: in STD_LOGIC;
-      INT_DE: in STD_LOGIC;
+      INT_EM: in STD_LOGIC;
       RESET_DE: in STD_LOGIC;
       regCode_in_dec: in STD_LOGIC;
       regcode_in_exec:in std_logic;
@@ -285,6 +287,7 @@ component hazard_detection_unit is
       -- outputs
       wrong_prediction_bit: out STD_LOGIC;
       load_ret_PC: out STD_LOGIC;
+      load_ret_PC_int: out STD_LOGIC;
       PC_write: out STD_LOGIC;
       control_unit_mux: out STD_LOGIC;
       fetch_stall: out STD_LOGIC
@@ -493,12 +496,12 @@ end component;
 
 BEGIN
   PC_flags_mem <= mem_out;
-  reset_de <= idex_reset_out;
-  int_de <= idex_intr_out;
+  RESET_DE <= idex_reset_out;
+  int_em <= ex_intr_mem_out;
   reg_code <= instruction(10 downto 8);
   -- to be updated by omar's unit
   mimicForward: mimic_forward port map(reg_code,Rdst_val,idex_src1_code_out,idex_src2_code_out,idex_dst_code_out,mimic_mem_reg_code,mimic_wb_reg_code,ex_src1_value_in,idex_src2_val_out,ex_mem_output_in,forward_mem_val_out,forward_WB_val_out,dec_branch_val,dec_src1_code, dec_src2_code, dec_dst_code,regCode_in_dec,dec_opcode,idex_csFlush_out,idex_opcode_out,dec_extended_imm,control_unit_mux,regcode_in_exec);
-  fetch_component: fetch port map (instruction,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,wrong_prediction_bit,PC_load,opcode_DE,ZF,prediction_bit,PC,unpred_pc,pred_pc);
+  fetch_component: fetch port map (instruction,clk,reset,Rdst_val,PC_flags_mem,unpredicted_PC_E,load_ret_PC,load_ret_PC_int,wrong_prediction_bit,PC_load,opcode_DE,ZF,prediction_bit,PC,unpred_pc,pred_pc);
   -- inputs for hazard detection unit
   opcode_DE <= idex_opcode_out;
   unpredicted_PC_E <= idex_unpred_pc_out;
@@ -524,13 +527,14 @@ BEGIN
                                                Rsrc2_DE_code,
                                                JZ_signal,
                                                INT,
-                                               INT_DE,
+                                               INT_EM,
                                                RESET_DE,
                                                regCode_in_dec,
                                                regCode_in_exec,
                                                idex_csFlush_out,
                                                wrong_prediction_bit,
                                                load_ret_PC,
+                                               load_ret_PC_int,
                                                PC_load,
                                                control_unit_mux,
                                                fetch_stall

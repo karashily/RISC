@@ -10,7 +10,6 @@ run
 run
 run
 run
-run
 force -freeze sim:/main/IO_IN 00000000000000000000000001010000 0
 run
 force -freeze sim:/main/IO_IN 00000000000000000000000100000000 0
@@ -48,9 +47,6 @@ run
 run
 run
 run
-run
-run
-
 force -freeze sim:/main/int 1 0
 run
 force -freeze sim:/main/int 0 0

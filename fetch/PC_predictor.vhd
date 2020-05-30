@@ -12,6 +12,8 @@ entity PC_predictor is
       prediction_bit: in std_logic;
 
       load_ret_PC: in std_logic;
+      load_ret_PC_int: in std_logic;
+
       wrong_prediction_bit: in std_logic;
 
       clk: in std_logic;
@@ -27,6 +29,7 @@ architecture PC_predictor_arch of PC_predictor is
     constant jz_opcode : std_logic_vector(4 downto 0) := "11000";
     constant jmp_opcode : std_logic_vector(4 downto 0) := "11001";
     constant call_opcode : std_logic_vector(4 downto 0) := "11010";
+    constant RTI_opcode: std_logic_vector(4 downto 0) := "11100";
 
 begin
     opcode <= A(15 downto 11);
@@ -34,7 +37,8 @@ begin
     PC_predicted <= Rdst_val when (wrong_prediction_bit = '0' and load_ret_PC = '0') and (( (opcode = jz_opcode) and (prediction_bit = '1') ) or  (opcode = jmp_opcode) or  (opcode = call_opcode))
     else std_logic_vector( unsigned(PC) + 1 ) when (wrong_prediction_bit = '0' and load_ret_PC = '0')
     else unpredicted_PC_E when (wrong_prediction_bit = '1')
-    else PC_Mem when (load_ret_PC = '1');
+    else PC_Mem when ((load_ret_PC = '1') and (A(15 downto 11) /= RTI_opcode))
+    else std_logic_vector( unsigned(PC_Mem) - 1 );
 
     PC_unpredicted <= std_logic_vector( unsigned(PC) + 1 ) when (wrong_prediction_bit = '0' and load_ret_PC = '0') and (( (opcode = jz_opcode) and (prediction_bit = '1') ) or  (opcode = jmp_opcode) or  (opcode = call_opcode))
     else Rdst_val when  (wrong_prediction_bit = '0' and load_ret_PC = '0') and ((opcode = jz_opcode) and (prediction_bit = '0'))
