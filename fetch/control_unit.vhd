@@ -45,7 +45,7 @@ architecture arch of control_unit is
             end case;
             -- alu operand 2
             case opcode is
-                when "00010" | "00101" | "00110" => ex_cs(2) <= '1';
+                when "00010" | "00101" | "00110" | "10010" => ex_cs(2) <= '1';
                 when others => ex_cs(2) <= '0';
             end case;
 

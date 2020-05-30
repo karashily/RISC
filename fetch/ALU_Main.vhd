@@ -72,6 +72,7 @@ f<= fout when opIN="00000"  or opIN="00001" or opIN="01010"or opIN="01011" or op
 	else  B when (opIN="01000")
 	else A when swap_flagin='0' and opIN="00111"
 	else B when swap_flagin='1' and opIN="00111"
+	else B when opIN="10010"
 	else (others =>'Z') ;
 Cout<=carry_artihmetic_out when( opIN="00000" or opIN="01010" or opIN="00010" or opIN="01011" or opIN="00001" )
    else A(n - to_integer(unsigned(B))-1) when opIN="00101" and inter_sig/='1' and flush_signal='0'

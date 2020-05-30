@@ -59,6 +59,8 @@ architecture hazard_detection_unit_arch of hazard_detection_unit is
     signal stall_bit_8_bef: std_logic := '0';
 
 
+    signal reg_exec_en: std_logic := '0';
+
     component fetch_hazard is
         port(
           A: in STD_LOGIC_VECTOR (15 DOWNTO 0);
@@ -117,6 +119,9 @@ architecture hazard_detection_unit_arch of hazard_detection_unit is
     END component;
 
 begin
+
+    reg_exec_en <= '1' when (A(15 downto 11) = "11000" or A(15 downto 11) = "11001" or A(15 downto 11) = "11010") and stall_bit_2 = '0' else '0';
+
     PC_write <= not( 
                 stall_bit_1 or 
                 stall_bit_3 or 
@@ -124,7 +129,7 @@ begin
                 stall_bit_6 or 
                 stall_bit_7 or
                 stall_bit_8_bef or 
-                regcode_in_exec
+                (regcode_in_exec and reg_exec_en)
                 );
     
     control_unit_mux <= stall_bit_1 or 
