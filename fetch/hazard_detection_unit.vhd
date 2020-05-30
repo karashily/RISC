@@ -27,8 +27,8 @@ entity hazard_detection_unit is
         ZF: in STD_LOGIC;
         -- RET-RTI-Reset-INT
         INT: in STD_LOGIC;
-        INT_EM: in STD_LOGIC;
-        RESET_EM: in STD_LOGIC;
+        INT_DE: in STD_LOGIC;
+        RESET_DE: in STD_LOGIC;
         regCode_in_dec: in STD_LOGIC;
         regcode_in_exec:in std_logic;
         ex_instr_flushed: in std_logic;
@@ -74,9 +74,9 @@ architecture hazard_detection_unit_arch of hazard_detection_unit is
         A: in std_logic_vector(15 downto 0);
         opcode_DE: in std_logic_vector(4 downto 0);
         INT: in std_logic;
-        INT_EM: in std_logic;
+        INT_DE: in std_logic;
         RESET: in std_logic;
-        RESET_EM: in std_logic;
+        RESET_DE: in std_logic;
         clk: in std_logic;
 
         output: out std_logic
@@ -136,7 +136,7 @@ begin
                         stall_bit_2 or 
                         stall_bit_3 or 
                         stall_bit_4 or 
-                        stall_bit_5_delayed_delayed or 
+                        stall_bit_5_delayed or 
                         stall_bit_6_delayed_delayed or 
                         stall_bit_7 or
                         stall_bit_8
@@ -145,7 +145,7 @@ begin
     wrong_prediction_bit <= stall_bit_4;
 
     long_fetch_hazard : fetch_hazard port map (A,clk,reset,stall_bit_2);
-    RET_RTI_RESET_INT_hazard : RET_RTI_RESET_INT_unit port map (A,opcode_DE,INT,INT_EM,RESET,RESET_EM,clk,stall_bit_5);
+    RET_RTI_RESET_INT_hazard : RET_RTI_RESET_INT_unit port map (A,opcode_DE,INT,INT_DE,RESET,RESET_DE,clk,stall_bit_5);
     reset_reg: register1 port map (stall_bit_5,'1','0',clk,stall_bit_5_delayed);
     reset_reg_2: register1 port map (stall_bit_5_delayed,'1','0',clk,stall_bit_5_delayed_delayed);
     -- load_ret_PC <= '1' when stall_bit_5_delayed = 

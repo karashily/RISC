@@ -7,9 +7,9 @@ ENTITY  RET_RTI_RESET_INT_unit IS PORT(
     A: in std_logic_vector(15 downto 0);
     opcode_DE: in std_logic_vector(4 downto 0);
     INT: in std_logic;
-    INT_EM: in std_logic;
+    INT_DE: in std_logic;
     RESET: in std_logic;
-    RESET_EM: in std_logic;
+    RESET_DE: in std_logic;
     clk: in std_logic;
 
     output: out std_logic
@@ -49,17 +49,17 @@ BEGIN
     end_stall <= '1' when
         opcode_DE = RET_opcode or
         opcode_DE = RTI_opcode or
-        INT_EM = '1' or
-        RESET_EM = '1'
+        INT_DE = '1' or
+        RESET_DE = '1'
     else '0';
 
     load_reg <= '0' when (stall_bit_5 = '1' and end_stall = '0') else '1';
-    reg : register1 port map (start_stall,load_reg,'0',clk,stall_bit_5);
+    reg : register1 port map (start_stall,load_reg,end_stall,clk,stall_bit_5);
     reg2 : register1 port map (end_stall,load_reg,'0',clk,end_stall_delayed);
-    output <= ((stall_bit_5  and not end_stall_delayed )or start_stall) when (opcode = RET_opcode)
-    else ((stall_bit_5 or start_stall) and not end_stall_delayed);
+    -- output <=  ((stall_bit_5 or start_stall) and not end_stall_delayed);
+    output <= stall_bit_5;
+    -- ((stall_bit_5  and not end_stall_delayed )or start_stall) when (opcode = RET_opcode)
+    -- else
 
 
-
-
-END  RET_RTI_RESET_INT_arch;
+END  RET_RTI_RESET_INT_arch; 

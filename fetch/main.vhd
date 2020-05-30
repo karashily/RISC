@@ -37,8 +37,8 @@ signal Rsrc1_EM_code: STD_LOGIC_VECTOR (2 DOWNTO 0) := (others => '0');
 signal Rsrc1_MW_code: STD_LOGIC_VECTOR (2 DOWNTO 0) := (others => '0');
 signal Rsrc2_DE_code: STD_LOGIC_VECTOR (2 DOWNTO 0) := (others => '0');
 signal ZF: STD_LOGIC := '0';
-signal INT_EM: STD_LOGIC := '0';
-signal RESET_EM: STD_LOGIC := '0';
+signal INT_DE: STD_LOGIC := '0';
+signal RESET_DE: STD_LOGIC := '0';
 signal control_unit_mux: STD_LOGIC := '0';
 signal fetch_stall: STD_LOGIC := '0';
 signal reg_code: std_logic_vector(2 downto 0);
@@ -275,8 +275,8 @@ component hazard_detection_unit is
       ZF: in STD_LOGIC;
       -- RET-RTI-Reset-INT
       INT: in STD_LOGIC;
-      INT_EM: in STD_LOGIC;
-      RESET_EM: in STD_LOGIC;
+      INT_DE: in STD_LOGIC;
+      RESET_DE: in STD_LOGIC;
       regCode_in_dec: in STD_LOGIC;
       regcode_in_exec:in std_logic;
       ex_instr_flushed: in std_logic;
@@ -493,8 +493,8 @@ end component;
 
 BEGIN
   PC_flags_mem <= mem_out;
-  reset_em <= ex_reset_mem_out;
-  int_em <= ex_intr_mem_out;
+  reset_de <= idex_reset_out;
+  int_de <= idex_intr_out;
   reg_code <= instruction(10 downto 8);
   -- to be updated by omar's unit
   mimicForward: mimic_forward port map(reg_code,Rdst_val,idex_src1_code_out,idex_src2_code_out,idex_dst_code_out,mimic_mem_reg_code,mimic_wb_reg_code,ex_src1_value_in,idex_src2_val_out,ex_mem_output_in,forward_mem_val_out,forward_WB_val_out,dec_branch_val,dec_src1_code, dec_src2_code, dec_dst_code,regCode_in_dec,dec_opcode,idex_csFlush_out,idex_opcode_out,dec_extended_imm,control_unit_mux,regcode_in_exec);
@@ -524,8 +524,8 @@ BEGIN
                                                Rsrc2_DE_code,
                                                JZ_signal,
                                                INT,
-                                               INT_EM,
-                                               RESET_EM,
+                                               INT_DE,
+                                               RESET_DE,
                                                regCode_in_dec,
                                                regCode_in_exec,
                                                idex_csFlush_out,
