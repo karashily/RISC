@@ -64,8 +64,9 @@ def asm2mc(ops):
 def prepare_ram(machine_code):
 	ram = []
 	for i in range(len(machine_code)):
-		entry = str(i) + " => \"" + machine_code[i] + "\","
-		ram.append(entry)
+		if(machine_code[i] != '0100000000000000'):
+			entry = str(i) + " => \"" + machine_code[i] + "\","
+			ram.append(entry)
 	ram.append("others => \"0100000000000000\"")
 	return ram
 
