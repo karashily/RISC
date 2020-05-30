@@ -11,7 +11,7 @@ run
 run
 run
 run
-run
+
 force -freeze sim:/main/IO_IN 00000000000000000000000000011001 0
 
 run
