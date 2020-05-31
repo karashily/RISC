@@ -1,0 +1,62 @@
+vsim -gui work.main
+add wave  \
+sim:/main/PC
+add wave  \
+sim:/main/decode_stage/regs/q0 \
+sim:/main/decode_stage/regs/q1 \
+sim:/main/decode_stage/regs/q2 \
+sim:/main/decode_stage/regs/q3 \
+sim:/main/decode_stage/regs/q4 \
+sim:/main/decode_stage/regs/q5 \
+sim:/main/decode_stage/regs/q6 \
+sim:/main/decode_stage/regs/q7
+add wave  \
+sim:/main/flag_reg/Q
+add wave  \
+sim:/main/memory/stack_pointer/q
+add wave  \
+sim:/main/clk \
+sim:/main/int \
+sim:/main/IO_IN \
+sim:/main/IO_OUT \
+sim:/main/reset
+force -freeze sim:/main/clk 1 0, 0 {50 ps} -r 100
+force -freeze sim:/main/reset 1 0
+force -freeze sim:/main/int 0 0
+run
+force -freeze sim:/main/reset 0 0
+run
+force -freeze sim:/main/IO_IN 00000000000000000000000000000101 0
+
+run
+run
+run
+run
+run
+
+force -freeze sim:/main/IO_IN 00000000000000000000000000011001 0
+
+run
+force -freeze sim:/main/IO_IN 00000000000000001111111111111101 0
+
+run
+force -freeze sim:/main/IO_IN 00000000000000001111001100100000 0
+
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
