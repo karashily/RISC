@@ -1,0 +1,49 @@
+vsim -gui work.fetch
+# vsim -gui work.fetch 
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.fetch(fetch_arch)
+# Loading work.pc_predictor(pc_predictor_arch)
+# Loading ieee.std_logic_arith(body)
+# Loading ieee.std_logic_signed(body)
+# Loading work.regi(arch)
+# vsim -gui work.fetch 
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.fetch(fetch_arch)
+# Loading work.pc_predictor(pc_predictor_arch)
+# Loading ieee.std_logic_arith(body)
+# Loading ieee.std_logic_signed(body)
+# Loading work.regi(arch)
+add wave -position end  sim:/fetch/A
+add wave -position end  sim:/fetch/clk
+add wave -position end  sim:/fetch/reset
+add wave -position end  sim:/fetch/Rdst_val
+add wave -position end  sim:/fetch/PC_flags_mem
+add wave -position end  sim:/fetch/unpredicted_PC_E
+add wave -position end  sim:/fetch/load_ret_PC
+add wave -position end  sim:/fetch/wrong_prediction_bit
+add wave -position end  sim:/fetch/PC_load
+add wave -position end  sim:/fetch/prediction_bit_out
+add wave -position end  sim:/fetch/PC_to_fetch
+add wave -position end  sim:/fetch/PC_predicted
+add wave -position end  sim:/fetch/PC_unpredicted
+add wave -position end  sim:/fetch/PC
+add wave -position end  sim:/fetch/PC_mem
+add wave -position end  sim:/fetch/prediction_bit
+add wave -position end  sim:/fetch/PC_reg_in
+force -freeze sim:/fetch/A 0000000000000000 0
+force -freeze sim:/fetch/clk 1 0, 0 {50 ps} -r 100
+force -freeze sim:/fetch/reset 1 0
+force -freeze sim:/fetch/PC_load 1 0
+force -freeze sim:/fetch/wrong_prediction_bit 0 0
+force -freeze sim:/fetch/load_ret_PC 0 0
+run
+force -freeze sim:/fetch/reset 0 0
+run
+run
+run
