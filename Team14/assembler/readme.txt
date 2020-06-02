@@ -8,6 +8,7 @@ Mohamed Ahmed Mohamed		Sec2	BN10
 To run the assembler use the command:
 """
 python Assembler.py
+and enter the file name
 """
 
 Note:

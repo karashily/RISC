@@ -23,6 +23,8 @@ add wave -position end  sim:/main/hazard_unit/regCode_in_dec
 add wave -position end  sim:/main/execution_stage/Rsrc1_sel_forward
 add wave -position end  sim:/main/execution_stage/Rsrc2_sel_forward
 
+mem load -i ../Analysis/BranchPrediction/mem files/BranchPrediction -  with forwarding only.mem  /main/memory/r/RAM
+
 # stop the prediction
 force -freeze sim:/main/fetch_component/PC_pred/prediction_bit 0 0
 
