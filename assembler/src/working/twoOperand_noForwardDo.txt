@@ -174,29 +174,22 @@ force -freeze sim:/main/execution_stage/Rsrc2_sel_forward 00 0
 run
 force -freeze sim:/main/reset 0 0
 run
-force -freeze sim:/main/IO_IN 00001100110110101111111000011001 0
+force -freeze sim:/main/IO_IN 00000000000000000000000000000101 0
+
 run
 run
 run
 run
 run
+
+force -freeze sim:/main/IO_IN 00000000000000000000000000011001 0
+
 run
-run
-force -freeze sim:/main/IO_IN 11111111111111111111111111111111 0
+force -freeze sim:/main/IO_IN 00000000000000001111111111111101 0
+
 run
 force -freeze sim:/main/IO_IN 00000000000000001111001100100000 0
-run
-run
-run
-run
-run
-run
-run
-run
-run
-run
-run
-run
+
 run
 run
 run
