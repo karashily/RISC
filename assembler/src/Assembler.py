@@ -70,6 +70,18 @@ def prepare_ram(machine_code):
 	ram.append("others => \"0100000000000000\"")
 	return ram
 
+def convert_to_mem(machine_code):
+    mem = []
+    mem.append("// memory data file (do not edit the following line - required for mem load use)")
+    mem.append("// instance=/main/memory/r/RAM")
+    mem.append("// format=mti addressradix=d dataradix=h version=1.0 wordsperline=1")
+    for i in range(len(machine_code)):
+        hexa = hex(int(machine_code[i], 2)).replace("0x", "")
+        hexa = '0' * (4-len(hexa)) + hexa
+        mem.append(str(i) + ": " + hexa)
+    for i in range(len(machine_code), 2048):
+        mem.append(str(i) + ": 4000")
+    return mem
 
 asm_file = input("Assembly code filename: ")
 ops = clean(read(asm_file))
@@ -82,4 +94,11 @@ for i in ram:
      mc_file.write(i + "\n")
 mc_file.close()
 
-print("Done...!\nOutput file = {}".format(mc_filename))
+mem = convert_to_mem(machine_code)
+mem_filename = asm_file.split(".")[0] + ".mem"
+mem_file = open(mem_filename, "w")
+for i in mem:
+     mem_file.write(i + "\n")
+mem_file.close()
+
+print("Done...!\nOutput ram file = {}\nOutput mem file = {}".format(mc_filename, mem_filename))
