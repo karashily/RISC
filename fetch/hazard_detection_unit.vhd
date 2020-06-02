@@ -181,6 +181,7 @@ begin
                         ret_rti_stall_control
                         ;
 
+                        
     wrong_prediction_bit <= stall_bit_4;
 
     long_fetch_hazard : fetch_hazard port map (A,clk,reset,stall_bit_2);
